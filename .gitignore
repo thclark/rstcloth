@@ -1,0 +1,11 @@
+.DS_Store
+*.swp
+*~
+#*#
+*#*
+build/*
+*.pyc
+makefile_builder.py
+docs/build/*
+dist
+*.egg-info
