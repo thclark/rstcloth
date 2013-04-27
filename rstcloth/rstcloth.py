@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import textwrap
+from rstcloth.cloth import Cloth, AttributeDict
 
 def fill(string, first=0, hanging=0):
 
@@ -24,7 +25,7 @@ def fill(string, first=0, hanging=0):
                          initial_indent=first_indent,
                          subsequent_indent=hanging_indent)
 
-def indent(content, indent):
+def _indent(content, indent):
     if indent == 0:
         return content
     else:
@@ -35,13 +36,8 @@ def indent(content, indent):
         else:
             return indent + line
 
-class AttributeDict(dict):
-    def __getattr__(self, attr):
-        return self[attr]
-    def __setattr__(self, attr, value):
-        self[attr] = value
 
-class RstCloth(object):
+class RstCloth(Cloth):
     def __init__(self):
         self.docs = AttributeDict( { } )
         self.docs._all = [ ]
@@ -54,6 +50,12 @@ class RstCloth(object):
                 self.docs[block] = []
 
             self.docs[block] = string
+
+    def newline(self, count=1, block='_all'):
+        if isinstance(count, int):
+            self._add('\n' * count)
+        else:
+            raise Exception("Count of newlines must be an int.")
 
     def directive(self, name, arg=None, fields=None, content=None, indent=0, block='_all'):
         o = [ ]
@@ -70,7 +72,7 @@ class RstCloth(object):
         if content is not None:
             o.extend(content)
 
-        self._add(indent(o, indent), block)
+        self._add(indent(o, _indent), block)
 
     @staticmethod
     def role(name, value, text=None):
@@ -81,33 +83,37 @@ class RstCloth(object):
             name = n[:-1]
 
         if text is not None:
-            return ':{}:`{}`'.format(name, value)
+            return ':{0}:`{1}`'.format(name, value)
         else:
-            return ':{}:`{} <{}>`'.format(name, value, text)
+            return ':{0}:`{2} <{1}>`'.format(name, value, text)
 
     @staticmethod
     def bold(string):
-        return '**{}**'.format(string)
+        return '**{0}**'.format(string)
 
     @staticmethod
     def emph(string):
-        return '*{}*'.format(string)
+        return '*{0}*'.format(string)
 
     @staticmethod
     def pre(string):
-        return '``{}``'.format(string)
+        return '``{0}``'.format(string)
 
     @staticmethod
     def inline_link(text, link):
-        return '`{} <{}>`_'.format(text, link)
+        return '`{0} <{1}>`_'.format(text, link)
 
     @staticmethod
     def footnote_ref(name):
-        return '[#{}]'.format(name)
+        return '[#{0}]'.format(name)
+
+    @staticmethod
+    def _paragraph(content):
+        return [ i for i.strip() in fill(content).split('\n') ]
 
     def footnote(self, ref, text, indent, block='_all'):
-        self._add(fill('.. [#{}] {}'.format(ref, text), indent, indent + 3), block=block)
-        self._add(fill('.. [#{}] {}'.format(ref, text), indent, indent + 3), block='_footnotes')
+        self._add(fill('.. [#{0}] {1}'.format(ref, text), indent, indent + 3), block=block)
+        self._add(fill('.. [#{0}] {1}'.format(ref, text), indent, indent + 3), block='_footnotes')
 
     def definition(self, name, text, indent, bold=False, block='_all'):
         o = []
@@ -116,6 +122,33 @@ class RstCloth(object):
             name = self.bold(name)
 
         o.append(name)
-        o.append(indent(text, 3, 3))
+        o.append(_indent(text, 3, 3))
 
-        self._add(indent(o, indent), block)
+        self._add(_indent(o, indent), block)
+
+    def replacement(self, name, value, indent, block='_all'):
+        output = '.. |{0}| replace:: {1}'.format(name, value)
+        self.add(indent(output, indent), block)
+
+    def field(self, name, value, indent, nowrap=None, block='_all'):
+        if wrap is not None or len(name) + len(value) < 60:
+            output = [ ':{0}: {1}'.format(name, value) ]
+        else:
+            output = [ ':{0}:'.format(name), '' ]
+
+            content = fill(value).split('\n')
+            for line in content:
+                output.append(_indent(line, 3))
+
+        for line in output:
+            self._add(_indent(line, indent))
+
+    def content(content, indent, block='_all'):
+        if isinstance(content, list):
+            for line in content:
+                self._add(_indent(line, indent), block)
+        else:
+            lines = self._paragraph(content)
+
+            for line in lines:
+                self._add(_indent(line, indent), block)
