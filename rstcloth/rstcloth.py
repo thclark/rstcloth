@@ -30,7 +30,7 @@ def indent(content, indent):
     else:
         indent = ' ' * indent
         if isintance(content, list):
-            for line in :
+            for line in content:
                 return map(lambda line: indent + line, content)
         else:
             return indent + line
