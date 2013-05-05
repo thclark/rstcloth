@@ -9,3 +9,4 @@ makefile_builder.py
 docs/build/*
 dist
 *.egg-info
+TAGS
