@@ -13,10 +13,9 @@
 # limitations under the License.
 
 import textwrap
-from rstcloth.cloth import Cloth, AttributeDict
+from cloth import Cloth, AttributeDict
 
 def fill(string, first=0, hanging=0):
-
     first_indent = ' ' * first
     hanging_indent = ' ' * hanging
 
@@ -30,11 +29,11 @@ def _indent(content, indent):
         return content
     else:
         indent = ' ' * indent
-        if isintance(content, list):
+        if isinstance(content, list):
             for line in content:
                 return map(lambda line: indent + line, content)
         else:
-            return indent + line
+            return indent + content
 
 
 class RstCloth(Cloth):
@@ -44,7 +43,7 @@ class RstCloth(Cloth):
 
     def _add(self, content, block='_all'):
         def _add_line(line):
-            self.docs._all.append(string)
+            self.docs._all.append(line)
 
             if block != '_all':
                 if block not in self.docs:
@@ -53,16 +52,19 @@ class RstCloth(Cloth):
                 self.docs[block] = content
 
         if isinstance(content, list):
-            for string in list:
+            for string in content:
                 _add_line(string)
         else:
-            _add_line()
+            _add_line(content)
 
     def newline(self, count=1, block='_all'):
         if isinstance(count, int):
-            self._add('\n' * count)
+            if count == 1:
+                self._add('', block=block)
+            else:
+                self._add('\n' * count - 1, block=block)
         else:
-            raise Exception("Count of newlines must be an int.")
+            raise Exception("Count of newlines must be a positive int.")
 
     def directive(self, name, arg=None, fields=None, content=None, indent=0, block='_all'):
         o = [ ]
@@ -79,7 +81,7 @@ class RstCloth(Cloth):
         if content is not None:
             o.extend(content)
 
-        self._add(indent(o, _indent), block)
+        self._add(_indent(o, indent), block)
 
     @staticmethod
     def role(name, value, text=None):
@@ -116,7 +118,7 @@ class RstCloth(Cloth):
 
     @staticmethod
     def _paragraph(content):
-        return [ i for i.strip() in fill(content).split('\n') ]
+        return [ i.strip() for i in fill(content).split('\n') ]
 
     def codeblock(self, content, indent=0, language=None):
         if langauge is None:
@@ -139,6 +141,14 @@ class RstCloth(Cloth):
         o.append(_indent(text, 3))
 
         self._add(_indent(o, indent), block)
+
+    def li(self, content, bullet='-', indent=0, block='_all'):
+        bullet = bullet + ' '
+        hanging_indent = len(bullet)
+
+        content = bullet + fill(content, 0, hanging_indent)
+
+        self._add(fill(content, indent, indent + hanging_indent), block)
 
     def replacement(self, name, value, indent=0, block='_all'):
         output = '.. |{0}| replace:: {1}'.format(name, value)
@@ -175,19 +185,19 @@ class RstCloth(Cloth):
         self.add([text, char * len(text)])
 
     def h1(self, text, block='_all'):
-        self.heading(text, char='=', block)
+        self.heading(text, char='=', block=block)
 
     def h2(self, text, block='_all'):
-        self.heading(text, char='-', block)
+        self.heading(text, char='-', block=block)
 
     def h3(self, text, block='_all'):
-        self.heading(text, char='~', block)
+        self.heading(text, char='~', block=block)
 
     def h4(self, text, block='_all'):
-        self.heading(text, char='+')
+        self.heading(text, char='+', block=block)
 
     def h5(self, text, block='_all'):
-        self.heading(text, char='^')
+        self.heading(text, char='^', block=block)
 
     def h6(self, text, block='_all'):
-        self.heading(text, char=';')
+        self.heading(text, char=';', block=block)
