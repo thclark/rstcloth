@@ -94,7 +94,7 @@ Project
 
 Source repository: the `canonical git.cyborginstitute.net repository
 <http://git.cyborginstitute.net/?p=rstcloth.git;a=summary>`_ has a
-`github mirror <https://github.com/cyborginstitute/rstcloth>`_. 
+`github mirror <https://github.com/cyborginstitute/rstcloth>`_.
 
 Issue tracker: `cyborg institute bugzilla
 <https://issues.cyborginstitute.net/buglist.cgi?cmdtype=runnamed&namedcmd=rstcloth>`_.
