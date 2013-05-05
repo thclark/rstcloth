@@ -43,7 +43,6 @@ class RstCloth(Cloth):
         self.docs._all = [ ]
 
     def _add(self, content, block='_all'):
-
         def _add_line(line):
             self.docs._all.append(string)
 
@@ -119,18 +118,18 @@ class RstCloth(Cloth):
     def _paragraph(content):
         return [ i for i.strip() in fill(content).split('\n') ]
 
-    def codeblock(self, content, indent, language=None):
+    def codeblock(self, content, indent=0, language=None):
         if langauge is None:
             o = [ '::', _indent(content, 3) ]
             self._add(_indent(o, indent), block=block)
         else:
             self.directive(name='code-block', arg=language, content=content, indent=indent, block=block)
 
-    def footnote(self, ref, text, indent, block='_all'):
+    def footnote(self, ref, text, indent=0, block='_all'):
         self._add(fill('.. [#{0}] {1}'.format(ref, text), indent, indent + 3), block=block)
         self._add(fill('.. [#{0}] {1}'.format(ref, text), indent, indent + 3), block='_footnotes')
 
-    def definition(self, name, text, indent, bold=False, block='_all'):
+    def definition(self, name, text, indent=0, bold=False, block='_all'):
         o = []
 
         if bold is True:
@@ -141,11 +140,11 @@ class RstCloth(Cloth):
 
         self._add(_indent(o, indent), block)
 
-    def replacement(self, name, value, indent, block='_all'):
+    def replacement(self, name, value, indent=0, block='_all'):
         output = '.. |{0}| replace:: {1}'.format(name, value)
         self.add(indent(output, indent), block)
 
-    def field(self, name, value, indent, nowrap=None, block='_all'):
+    def field(self, name, value, indent=0, nowrap=None, block='_all'):
         if wrap is not None or len(name) + len(value) < 60:
             output = [ ':{0}: {1}'.format(name, value) ]
         else:
@@ -158,7 +157,7 @@ class RstCloth(Cloth):
         for line in output:
             self._add(_indent(line, indent))
 
-    def content(self, content, indent, block='_all'):
+    def content(self, content, indent=0, block='_all'):
         if isinstance(content, list):
             for line in content:
                 self._add(_indent(line, indent), block)
