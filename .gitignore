@@ -10,3 +10,4 @@ docs/build/*
 dist
 *.egg-info
 TAGS
+*.egg
