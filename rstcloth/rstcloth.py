@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import textwrap
-from cloth import Cloth, AttributeDict
+from rstcloth.cloth import Cloth, AttributeDict
 
 def fill(string, first=0, hanging=0):
     first_indent = ' ' * first

@@ -20,7 +20,7 @@ setup(
         'Topic :: Software Development :: Build Tools',
         'Topic :: Documentation',
         'Topic :: Text Processing',
-        ]
+        ],
     entry_points={
         'console_scripts': [
             'rstable = rstcloth.table:main',
