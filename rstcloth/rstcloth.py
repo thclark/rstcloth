@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
+
 import textwrap
 
-try: 
-    from rstcloth.cloth import Cloth, AttributeDict
-except ImportError:
-    from cloth import Cloth, AttributeDict
+from rstcloth.cloth import Cloth, AttributeDict
 
 def fill(string, first=0, hanging=0):
     first_indent = ' ' * first

@@ -14,13 +14,15 @@
 #
 # Authors: Sam Kleinman, Kay Kim
 
+from __future__ import absolute_import
+
 import sys
 import argparse
 import string
 import textwrap
 
 import yaml
-from rstcloth import RstCloth
+from rstcloth.rstcloth import RstCloth
 
 def normalize_cell_height(rowdata):
     """

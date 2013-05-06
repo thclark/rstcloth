@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = '0.2-dev'
+from __future__ import absolute_import
+from rstcloth.rstcloth import RstCloth
 
-try: 
-    from rstcloth.rstcloth import RstCloth
-except ImportError:
-    from rstcloth import RstCloth
+__version__ = '0.2-dev'
