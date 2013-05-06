@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = '0.1'
+__version__ = '0.1.1'
 
-from rstcloth.rstcloth import RstCloth
+try: 
+    from rstcloth.rstcloth import RstCloth
+except ImportError:
+    from rstcloth import RstCloth
