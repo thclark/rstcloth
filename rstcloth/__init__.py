@@ -15,4 +15,4 @@
 from __future__ import absolute_import
 from rstcloth.rstcloth import RstCloth
 
-__version__ = '0.2-dev'
+__version__ = '0.1.2'
