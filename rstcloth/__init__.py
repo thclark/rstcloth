@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-from rstcloth.rstcloth import RstCloth
+from rstcloth import RstCloth
+from cloth import Cloth, AttributeDict
 
-__version__ = '0.1-next'
+__version__ = '0.1.3'

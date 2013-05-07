@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-
 import textwrap
 
-from rstcloth.cloth import Cloth, AttributeDict
+from cloth import Cloth, AttributeDict
 
 def fill(string, first=0, hanging=0):
     first_indent = ' ' * first
@@ -185,7 +183,7 @@ class RstCloth(Cloth):
         self._add([line, text, line], block)
 
     def heading(self, text, char, block='_all'):
-        self.add([text, char * len(text)])
+        self._add([text, char * len(text)])
 
     def h1(self, text, block='_all'):
         self.heading(text, char='=', block=block)

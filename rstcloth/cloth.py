@@ -49,10 +49,10 @@ class AttributeDict(dict):
 
 class Cloth(object):
     def get_block(self, block='_all'):
-        if block not in self.builder:
+        if block not in self.docs:
             raise Exception('Error: ' + block + ' not specified in buildfile')
         else:
-            return self.builder[block]
+            return self.docs[block]
 
     def print_content(self, block_order=['_all']):
         output = []
@@ -61,16 +61,16 @@ class Cloth(object):
             raise Exception('Cannot print blocks not specified as a list.')
         else:
             for block in block_order:
-                output.append(self.builder[block])
+                output.append(self.docs[block])
 
             output = [item for sublist in output for item in sublist]
             print_output(output)
 
     def print_block(self, block='_all'):
-        if block not in self.builder:
+        if block not in self.docs:
             raise MissingBlock('Error: ' + block + ' not specified.')
         else:
-            print_output(self.builder[block])
+            print_output(self.docs[block])
 
     def write(self, filename, block_order=['_all']):
         output = []
@@ -79,13 +79,13 @@ class Cloth(object):
             raise Exception('Cannot write blocks not specified as a list.')
         else:
             for block in block_order:
-                output.append(self.builder[block])
+                output.append(self.docs[block])
 
             output = [item for sublist in output for item in sublist]
             write_file(output, filename)
 
     def write_block(self, filename, block='_all'):
-        if block not in self.builder:
+        if block not in self.docs:
             raise Exception('Error: ' + block + ' not specified.')
         else:
-            write_file(self.builder[block], filename)
+            write_file(self.docs[block], filename)
