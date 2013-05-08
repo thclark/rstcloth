@@ -223,9 +223,14 @@ class RstTable(OutputTable):
 # Outputs a list-table
 
 class ListTable(OutputTable):
-    def __init__(self, imported_table, indent=0):
+    def __init__(self, imported_table, widths=None, indent=0):
         self.table = imported_table
         self.indent = indent
+
+        if widths is not None:
+            self.widths = [ str(i) for i in widths ]
+        else:
+            self.widths = None
 
         self.r = RstCloth()
         self._render_table()
@@ -233,22 +238,31 @@ class ListTable(OutputTable):
 
     def _render_table(self):
         b = '_all'
+
+        rows = []
+        _fields = []
         if self.table.header is not None:
-            fields = [('header-rows', '1')]
+            _fields.append(('header-rows', '1'))
 
-        self.r.directive('list-table', fields=fields, indent=self.indent, block=b)
+        if self.widths is not None:
+            _fields.append(('widths', ' '.join(self.widths)))
 
-        # todo actually add header content here or by factoring out the follwoing logic
+        rows.append({ 'header': [ i[0] for i in self.table.header ] })
+
+        rows.extend(self.table.rows)
+
+        self.r.directive('list-table', fields=_fields, indent=self.indent, block=b)
 
         self.r.newline(block=b)
 
-        for row in self.table.rows:
+        for row in rows:
             r = row.popitem()[1]
 
-            self.r.li(r[0], bullet='* -', indent=self.indent + 3, block=b)
+            self.r.li(r[0], bullet='* -', indent=self.indent + 3, wrap=False, block=b)
+            self.r.newline(block=b)
 
             for cell in r[1:]:
-                self.r.li(cell, bullet='  -',  indent=self.indent + 3, block=b)
+                self.r.li(cell, bullet='  -',  indent=self.indent + 3, wrap=False, block=b)
                 self.r.newline(block=b)
 
 ###################################
