@@ -77,7 +77,7 @@ class RstCloth(Cloth):
             if count == 1:
                 self._add('', block=block)
             else:
-                self._add('\n' * count - 1, block=block)
+                self._add('\n' * (count - 1), block=block)
         else:
             raise Exception("Count of newlines must be a positive int.")
 
@@ -91,7 +91,7 @@ class RstCloth(Cloth):
 
         if fields is not None:
             for k, v in fields:
-                o.append(fill(':' + k + ': ' + v, 3, wrap=wrap))
+                o.append(_indent(':' + k + ': ' + str(v), 3))
 
         if content is not None:
             o.extend(content)
@@ -106,7 +106,7 @@ class RstCloth(Cloth):
                 n = domain + ':'
             name = n[:-1]
 
-        if text is not None:
+        if text is None:
             return ':{0}:`{1}`'.format(name, value)
         else:
             return ':{0}:`{2} <{1}>`'.format(name, value, text)
@@ -153,7 +153,7 @@ class RstCloth(Cloth):
             name = self.bold(name)
 
         o.append(name)
-        o.append(_indent(text, 3))
+        o.append(fill(text, 3, 3, wrap=wrap))
 
         self._add(_indent(o, indent), block)
 
@@ -174,14 +174,21 @@ class RstCloth(Cloth):
         self.add(indent(output, indent, wrap=wrap), block)
 
     def field(self, name, value, indent=0, wrap=True, block='_all'):
-        if wrap is False or len(name) + len(value) < 60:
-            output = [ ':{0}: {1}'.format(name, value) ]
-        else:
-            output = [ ':{0}:'.format(name), '' ]
+        output = [ ':{0}:'.format(name) ]
 
+        if len(name) + len(value) < 60:
+            output[0] += ' ' + value
+            final = True
+        else:
+            output.append('')
+            final = False
+
+        if wrap is True and final is False:
             content = fill(value, wrap=wrap).split('\n')
             for line in content:
                 output.append(_indent(line, 3))
+        if wrap is False and final is False:
+            output.append(_indent(value, 3))
 
         for line in output:
             self._add(_indent(line, indent))
@@ -191,7 +198,7 @@ class RstCloth(Cloth):
             for line in content:
                 self._add(_indent(line, indent), block)
         else:
-            lines = self._paragraph(content)
+            lines = self._paragraph(content, wrap)
 
             for line in lines:
                 self._add(_indent(line, indent), block)
@@ -220,3 +227,4 @@ class RstCloth(Cloth):
 
     def h6(self, text, block='_all'):
         self.heading(text, char=';', block=block)
+
