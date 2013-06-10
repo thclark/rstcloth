@@ -94,7 +94,13 @@ class RstCloth(Cloth):
                 o.append(_indent(':' + k + ': ' + str(v), 3))
 
         if content is not None:
-            o.extend(content)
+            o.append('')
+
+            if isinstance(content, list):
+                for line in content:
+                    o.append(_indent(content, 3))
+            else:
+                o.append(_indent(content, 3))
 
         self._add(_indent(o, indent), block)
 
@@ -227,4 +233,3 @@ class RstCloth(Cloth):
 
     def h6(self, text, block='_all'):
         self.heading(text, char=';', block=block)
-
