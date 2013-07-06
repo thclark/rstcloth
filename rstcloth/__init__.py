@@ -13,6 +13,5 @@
 # limitations under the License.
 
 from rstcloth import RstCloth
-from cloth import Cloth, AttributeDict
 
 __version__ = '0.1.3-dev'

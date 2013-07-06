@@ -64,7 +64,7 @@ class RstCloth(Cloth):
                 if block not in self.docs:
                     self.docs[block] = []
 
-                self.docs[block] = content
+                self.docs[block].append(line)
 
         if isinstance(content, list):
             for string in content:
@@ -77,6 +77,7 @@ class RstCloth(Cloth):
             if count == 1:
                 self._add('', block=block)
             else:
+                # subtract one because every item gets one \n for free.
                 self._add('\n' * (count - 1), block=block)
         else:
             raise Exception("Count of newlines must be a positive int.")
@@ -84,7 +85,7 @@ class RstCloth(Cloth):
     def directive(self, name, arg=None, fields=None, content=None, indent=0, wrap=True, block='_all'):
         o = [ ]
 
-        o.append('.. ' + name + '::')
+        o.append('.. {0}::'.format(name))
 
         if arg is not None:
             o[0] += ' ' + arg
@@ -98,7 +99,7 @@ class RstCloth(Cloth):
 
             if isinstance(content, list):
                 for line in content:
-                    o.append(_indent(content, 3))
+                    o.append(_indent(line, 3))
             else:
                 o.append(_indent(content, 3))
 
@@ -107,10 +108,7 @@ class RstCloth(Cloth):
     @staticmethod
     def role(name, value, text=None):
         if isinstance(name, list):
-            n = ''
-            for domain in name:
-                n = domain + ':'
-            name = n[:-1]
+            name = ':'.join(name)
 
         if text is None:
             return ':{0}:`{1}`'.format(name, value)
