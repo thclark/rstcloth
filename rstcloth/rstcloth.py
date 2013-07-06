@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
+
 import textwrap
 
-from cloth import Cloth
+from rstcloth.cloth import Cloth
 
 def fill(string, first=0, hanging=0, wrap=True):
     first_indent = ' ' * first

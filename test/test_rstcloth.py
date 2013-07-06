@@ -1,5 +1,5 @@
 from unittest import TestCase
-from rstcloth import RstCloth
+from rstcloth.rstcloth import RstCloth
 
 class TestRstCloth(TestCase):
     @classmethod
@@ -79,7 +79,7 @@ class TestRstCloth(TestCase):
         self.assertEqual(self.r.docs['d8'][3], '   second')
 
 
-    def test_directive_simple_indent_indent(self):
+    def test_directive_simple_indent(self):
         self.r.directive('test', indent=3, block='di0')
         self.assertEqual(self.r.docs['di0'][0], '   .. test::')
 
@@ -178,4 +178,3 @@ class TestRstCloth(TestCase):
     def test_footnote_ref(self):
         ret = self.r.footnote_ref('name')
         self.assertEqual(ret, '[#name]')
-        
