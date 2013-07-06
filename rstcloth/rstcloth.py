@@ -14,7 +14,7 @@
 
 import textwrap
 
-from cloth import Cloth, AttributeDict
+from cloth import Cloth
 
 def fill(string, first=0, hanging=0, wrap=True):
     first_indent = ' ' * first
@@ -32,7 +32,7 @@ def fill(string, first=0, hanging=0, wrap=True):
         elif first > hanging:
             indent_diff = first - hanging
             o = indent_diff * ' '
-            o + '\n'.join([ hanging_indent + line for line in content ])
+            o += '\n'.join([ hanging_indent + line for line in content ])
             return o
         elif first < hanging:
             indent_diff = hanging - first
@@ -53,12 +53,12 @@ def _indent(content, indent):
 
 class RstCloth(Cloth):
     def __init__(self):
-        self.docs = AttributeDict( { } )
-        self.docs._all = [ ]
+        self.docs = dict()
+        self.docs['_all'] = [ ]
 
     def _add(self, content, block='_all'):
         def _add_line(line):
-            self.docs._all.append(line)
+            self.docs['_all'].append(line)
 
             if block != '_all':
                 if block not in self.docs:
@@ -158,10 +158,10 @@ class RstCloth(Cloth):
         if bold is True:
             name = self.bold(name)
 
-        o.append(name)
-        o.append(fill(text, 3, 3, wrap=wrap))
+        o.append(_indent(name, indent))
+        o.append(fill(text, indent + 3, indent + 3, wrap=wrap))
 
-        self._add(_indent(o, indent), block)
+        self._add(o, block)
 
     def li(self, content, bullet='-', indent=0, wrap=True, block='_all'):
         bullet = bullet + ' '

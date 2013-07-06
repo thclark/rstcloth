@@ -41,12 +41,6 @@ def write_file(list, filename):
         for line in list:
             f.write(line + '\n')
 
-class AttributeDict(dict):
-    def __getattr__(self, attr):
-        return self[attr]
-    def __setattr__(self, attr, value):
-        self[attr] = value
-
 class Cloth(object):
     def get_block(self, block='_all'):
         if block not in self.docs:
