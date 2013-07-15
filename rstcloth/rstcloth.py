@@ -141,8 +141,12 @@ class RstCloth(Cloth):
     def _paragraph(content, wrap=True):
         return [ i.strip() for i in fill(content, wrap=wrap).split('\n') ]
 
-    def codeblock(self, content, indent=0, wrap=True, language=None):
-        if langauge is None:
+    def replacement(self, name, value, indent=0, block='_all'):
+        output = '.. |{0}| replace:: {1}'.format(name, value)
+        self._add(_indent(output, indent), block)
+
+    def codeblock(self, content, indent=0, wrap=True, language=None, block='_all'):
+        if language is None:
             o = [ '::', _indent(content, 3) ]
             self._add(_indent(o, indent), block=block)
         else:
@@ -175,10 +179,6 @@ class RstCloth(Cloth):
             content = bullet + fill(content, 0, len(bullet), wrap)
             self._add(fill(content, indent, indent, wrap), block)
 
-    def replacement(self, name, value, indent=0, wrap=True, block='_all'):
-        output = '.. |{0}| replace:: {1}'.format(name, value)
-        self.add(indent(output, indent, wrap=wrap), block)
-
     def field(self, name, value, indent=0, wrap=True, block='_all'):
         output = [ ':{0}:'.format(name) ]
 
@@ -193,6 +193,7 @@ class RstCloth(Cloth):
             content = fill(value, wrap=wrap).split('\n')
             for line in content:
                 output.append(_indent(line, 3))
+ 
         if wrap is False and final is False:
             output.append(_indent(value, 3))
 
@@ -214,7 +215,7 @@ class RstCloth(Cloth):
         self._add([line, text, line], block)
 
     def heading(self, text, char, block='_all'):
-        self._add([text, char * len(text)])
+        self._add([text, char * len(text)], block)
 
     def h1(self, text, block='_all'):
         self.heading(text, char='=', block=block)

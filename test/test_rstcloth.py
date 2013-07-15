@@ -178,3 +178,115 @@ class TestRstCloth(TestCase):
     def test_footnote_ref(self):
         ret = self.r.footnote_ref('name')
         self.assertEqual(ret, '[#name]')
+
+    def test_codeblock_simple(self):
+        self.r.codeblock('ls -lha', block='cb0')
+        self.assertEqual(self.r.docs['cb0'], ['::', '   ls -lha'])
+    
+    def test_codeblock_with_language(self):
+        self.r.codeblock('ls -lha', language='shell',block='cb1')
+        self.assertEqual(self.r.docs['cb1'], ['.. code-block:: shell', '', '   ls -lha'])
+
+    def test_footnote(self):
+        self.r.footnote('footsnotes', 'text of the note', block='fn0')
+        self.assertEqual(self.r.docs['fn0'][0], '.. [#footsnotes] text of the note')
+
+    def test_footnote_with_indent(self):
+        self.r.footnote('footsnotes', 'text of the note', block='fn1', indent=3)
+        self.assertEqual(self.r.docs['fn1'][0], '   .. [#footsnotes] text of the note')
+
+    def test_footnote_with_wrap(self):
+        self.r.footnote('footsnotes', 'the ' * 40, block='fn2', wrap=True)
+        self.assertEqual(self.r.docs['fn2'][0],
+                         '.. [#footsnotes]' + ' the' * 14 + '\n  ' + ' the' * 17 + '\n  ' + ' the' * 9)
+
+    def test_definition(self):
+        self.r.definition('defitem', 'this is def text', block='dfn0')
+        self.assertEqual(self.r.docs['dfn0'], ['defitem', '   this is def text'])
+
+    def test_definition_with_indent(self):
+        self.r.definition('defitem', 'this is def text', indent=3, block='dfn1')
+        self.assertEqual(self.r.docs['dfn1'], ['   defitem', '      this is def text'])
+
+    def test_title_default(self):
+        self.r.title('test text', block='hd0')
+        self.assertEqual(self.r.docs['hd0'], ['=========', 'test text', '========='])
+
+    def test_title_alt(self):
+        self.r.title('test text', char='-', block='hd1')
+        self.assertEqual(self.r.docs['hd1'], ['---------', 'test text', '---------'])
+
+    def test_heading_one(self):
+        self.r.heading('test heading', char='-', block='hd2')
+        self.assertEqual(self.r.docs['hd2'], ['test heading', '------------'])
+
+    def test_heading_two(self):
+        self.r.heading('test heading', char='^', block='hd3')
+        self.assertEqual(self.r.docs['hd3'], ['test heading', '^^^^^^^^^^^^'])
+
+    def test_h1(self):
+        self.r.h1('test', block='hd4')
+        self.assertEqual(self.r.docs['hd4'], ['test', '===='])
+
+    def test_h2(self):
+        self.r.h2('test', block='hd5')
+        self.assertEqual(self.r.docs['hd5'], ['test', '----'])
+
+    def test_h3(self):
+        self.r.h3('test', block='hd6')
+        self.assertEqual(self.r.docs['hd6'], ['test', '~~~~'])
+
+    def test_h4(self):
+        self.r.h4('test', block='hd7')
+        self.assertEqual(self.r.docs['hd7'], ['test', '++++'])
+
+    def test_h5(self):
+        self.r.h5('test', block='hd8')
+        self.assertEqual(self.r.docs['hd8'], ['test', '^^^^'])
+
+    def test_h6(self):
+        self.r.h6('test', block='hd9')
+        self.assertEqual(self.r.docs['hd9'], ['test', ';;;;'])
+        
+
+    def test_replacement(self):
+        self.r.replacement('foo', 'replace-with-bar', block='sub0')
+        self.assertEqual(self.r.docs['sub0'], ['.. |foo| replace:: replace-with-bar'])
+
+    def test_replacement_with_indent(self):
+        self.r.replacement('foo', 'replace-with-bar', indent=3, block='sub1')
+        self.assertEqual(self.r.docs['sub1'], ['   .. |foo| replace:: replace-with-bar'])
+
+
+    def test_li_simple(self):
+        self.r.li('foo', block='li0')
+        self.assertEqual(self.r.docs['li0'], ['- foo'])
+
+    def test_li_simple_indent(self):
+        self.r.li('foo', indent=3, block='li1')
+        self.assertEqual(self.r.docs['li1'], ['   - foo'])
+
+    def test_li_simple_alt(self):
+        self.r.li('foo', bullet='*', block='li2')
+        self.assertEqual(self.r.docs['li2'], ['* foo'])
+
+    def test_li_simple_alt_indent(self):
+        self.r.li('foo', bullet='*', indent=3, block='li3')
+        self.assertEqual(self.r.docs['li3'], ['   * foo'])
+
+
+    def test_li_complex(self):
+        self.r.li(['foo', 'bar'], block='li0')
+        self.assertEqual(self.r.docs['li0'], ['- foo bar'])
+
+    def test_li_complex_indent(self):
+        self.r.li(['foo', 'bar'], indent=3, block='li1')
+        self.assertEqual(self.r.docs['li1'], ['   - foo bar'])
+
+    def test_li_complex_alt(self):
+        self.r.li(['foo', 'bar'], bullet='*', block='li2')
+        self.assertEqual(self.r.docs['li2'], ['* foo bar'])
+
+    def test_li_complex_alt_indent(self):
+        self.r.li(['foo', 'bar'], bullet='*', indent=3, block='li3')
+        self.assertEqual(self.r.docs['li3'], ['   * foo bar'])
