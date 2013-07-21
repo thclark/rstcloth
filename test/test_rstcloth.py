@@ -81,51 +81,39 @@ class TestRstCloth(TestCase):
 
     def test_directive_simple_indent(self):
         self.r.directive('test', indent=3, block='di0')
-        self.assertEqual(self.r.docs['di0'][0], '   .. test::')
+        self.assertEqual(self.r.docs['di0'], ['   .. test::'])
 
     def test_directive_arg_named_indent(self):
         self.r.directive('test', arg='what', indent=3, block='di3')
-        self.assertEqual(self.r.docs['di3'][0], '   .. test:: what')
+        self.assertEqual(self.r.docs['di3'], ['   .. test:: what'])
 
     def test_directive_arg_positional_indent(self):
         self.r.directive('test', 'what', indent=3, block='di1')
-        self.assertEqual(self.r.docs['di1'][0], '   .. test:: what')
+        self.assertEqual(self.r.docs['di1'], ['   .. test:: what'])
 
     def test_directive_fields_indent(self):
         self.r.directive('test', fields=[('a', 'b')], indent=3, block='di2')
-        self.assertEqual(self.r.docs['di2'][0], '   .. test::')
-        self.assertEqual(self.r.docs['di2'][1], '      :a: b')
+        self.assertEqual(self.r.docs['di2'], ['   .. test::', '      :a: b'])
 
     def test_directive_fields_with_arg_indent(self):
         self.r.directive('test', arg='what', fields=[('a', 'b')], indent=3, block='di4')
-        self.assertEqual(self.r.docs['di4'][0], '   .. test:: what')
-        self.assertEqual(self.r.docs['di4'][1], '      :a: b')
+        self.assertEqual(self.r.docs['di4'], ['   .. test:: what', '      :a: b'])
 
     def test_directive_fields_multiple_indent(self):
         self.r.directive('test', indent=3, fields=[('a', 'b'), ('c', 'd')], block='di5')
-        self.assertEqual(self.r.docs['di5'][0], '   .. test::')
-        self.assertEqual(self.r.docs['di5'][1], '      :a: b')
-        self.assertEqual(self.r.docs['di5'][2], '      :c: d')
+        self.assertEqual(self.r.docs['di5'], ['   .. test::', '      :a: b', '      :c: d'])
 
     def test_directive_fields_multiple_arg_indent(self):
         self.r.directive('test', arg='new', indent=3, fields=[('a', 'b'), ('c', 'd')], block='di6')
-        self.assertEqual(self.r.docs['di6'][0], '   .. test:: new')
-        self.assertEqual(self.r.docs['di6'][1], '      :a: b')
-        self.assertEqual(self.r.docs['di6'][2], '      :c: d')
+        self.assertEqual(self.r.docs['di6'], ['   .. test:: new', '      :a: b', '      :c: d'])
 
     def test_directive_content_indent(self):
         self.r.directive('test', content='string', indent=3, block='di7')
-        self.assertEqual(self.r.docs['di7'][0], '   .. test::')
-        self.assertEqual(self.r.docs['di7'][1], '   ')
-        self.assertEqual(self.r.docs['di7'][2], '      string')
+        self.assertEqual(self.r.docs['di7'], ['   .. test::', '   ', '      string'])
 
     def test_directive_with_multiline_content_indent(self):
         self.r.directive('test', indent=3, content=['string', 'second'], block='di8')
-        self.assertEqual(self.r.docs['di8'][0], '   .. test::')
-        self.assertEqual(self.r.docs['di8'][1], '   ')
-        self.assertEqual(self.r.docs['di8'][2], '      string')
-        self.assertEqual(self.r.docs['di8'][3], '      second')
-    
+        self.assertEqual(self.r.docs['di8'], ['   .. test::', '   ', '      string', '      second'])
 
     def test_single_role_no_text(self):
         ret = self.r.role('test', 'value')
@@ -290,3 +278,71 @@ class TestRstCloth(TestCase):
     def test_li_complex_alt_indent(self):
         self.r.li(['foo', 'bar'], bullet='*', indent=3, block='li3')
         self.assertEqual(self.r.docs['li3'], ['   * foo bar'])
+
+    def test_field_simple(self):
+        self.r.field('fname', 'fvalue', block='fld0')
+        self.assertEqual(self.r.docs['fld0'], [':fname: fvalue'])
+
+    def test_field_long_simple(self):
+        self.r.field('fname is fname', 'fvalue', block='fld1')
+        self.assertEqual(self.r.docs['fld1'], [':fname is fname: fvalue'])
+
+    def test_field_simple_long(self):
+        self.r.field('fname', 'v' * 54, block='fld2')
+        self.assertEqual(self.r.docs['fld2'], [':fname: ' + 'v' * 54])
+
+    def test_field_simple_long_long(self):
+        self.r.field('fname', 'v' * 55, block='fld3')
+        self.assertEqual(self.r.docs['fld3'], [':fname:', '', '   ' + 'v' * 55])
+
+    def test_field_indent_simple(self):
+        self.r.field('fname', 'fvalue', indent=3, block='fld4')
+        self.assertEqual(self.r.docs['fld4'], ['   :fname: fvalue'])
+
+    def test_field_indent_long_simple(self):
+        self.r.field('fname is fname', 'fvalue', indent=3, block='fld5')
+        self.assertEqual(self.r.docs['fld5'], ['   :fname is fname: fvalue'])
+
+    def test_field_indent_simple_long(self):
+        self.r.field('fname', 'v' * 54, indent=3, block='fld6')
+        self.assertEqual(self.r.docs['fld6'], ['   :fname: ' + 'v' * 54])
+
+    def test_field_indent_simple_long_long(self):
+        self.r.field('fname', 'v' * 55, indent=3, block='fld7')
+        self.assertEqual(self.r.docs['fld7'], ['   :fname:', '   ', '      ' + 'v' * 55])
+
+    def test_field_wrap_simple(self):
+        self.r.field('fname', 'the ' * 100, block='fld8')
+        self.assertEqual(self.r.docs['fld8'], [':fname:', '', '  ' + ' the' * 18, '  ' + ' the' * 18, '  ' + ' the' * 18, '  ' + ' the' * 18, '  ' + ' the' * 18, '  ' + ' the' * 10])
+
+    def test_field_wrap_indent_simple(self):
+        self.r.field('fname', 'the ' * 100, indent=3, block='fld8')
+        self.assertEqual(self.r.docs['fld8'], ['   :fname:', '   ', '     ' + ' the' * 18, '     ' + ' the' * 18, '     ' + ' the' * 18, '     ' + ' the' * 18, '     ' + ' the' * 18, '     ' + ' the' * 10])
+
+    def test_content_string(self):
+        self.r.content('this is sparta', block='ct0')
+        self.assertEqual(self.r.docs['ct0'], ['this is sparta'])
+
+    def test_content_list(self):
+        self.r.content(['this is sparta', 'this is spinal tap'], block='ct1')
+        self.assertEqual(self.r.docs['ct1'], ['this is sparta', 'this is spinal tap'])
+
+    def test_content_indent_string(self):
+        self.r.content('this is sparta', indent=3, block='ct2')
+        self.assertEqual(self.r.docs['ct2'], ['   this is sparta'])
+
+    def test_content_indent_list(self):
+        self.r.content(['this is sparta', 'this is spinal tap'], indent=3, block='ct3')
+        self.assertEqual(self.r.docs['ct3'], ['   this is sparta', '   this is spinal tap'])
+
+    def test_content_long(self):
+        self.r.content('the ' * 100, block='ct4')
+        self.assertEqual(self.r.docs['ct4'], [ 'the' + ' the' * 17, 'the ' * 17 + 'the', 'the ' * 17 + 'the', 'the ' * 17 + 'the', 'the ' * 17 + 'the', 'the ' * 9 + 'the' ])
+
+    def test_ontent_indent_long(self):
+        self.r.content('the ' * 100, indent=3 ,block='ct5')
+        self.assertEqual(self.r.docs['ct5'], [ '   the' + ' the' * 17, "   " + 'the ' * 17 + 'the', '   ' + 'the ' * 17 + 'the', '   ' + 'the ' * 17 + 'the', '   ' + 'the ' * 17 + 'the', '   ' + 'the ' * 9 + 'the' ])
+
+    def test_ontent_indent_long_nowrap(self):
+        self.r.content('the ' * 100, wrap=False, indent=3 ,block='ct5')
+        self.assertEqual(self.r.docs['ct5'], [ '   ' + 'the ' * 99 + 'the'])

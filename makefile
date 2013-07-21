@@ -7,7 +7,8 @@ tags:
 	@echo [dev]: regenerated tags
 
 test:
-	@nosetests2
+	@nosetests-2.7
+	@nosetests3
 
 push-git:
 	git push cyborg
