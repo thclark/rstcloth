@@ -25,6 +25,8 @@ def fill(string, first=0, hanging=0, wrap=True):
     if wrap is True:
         return textwrap.fill(string,
                              width=72,
+                             break_on_hyphens=False,
+                             break_long_words=False,
                              initial_indent=first_indent,
                              subsequent_indent=hanging_indent)
     else:
