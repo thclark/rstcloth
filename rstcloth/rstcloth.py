@@ -198,6 +198,10 @@ class RstCloth(Cloth):
         for line in output:
             self._add(_indent(line, indent), block)
 
+    def ref_target(self, name, indent=0, block='_all'):
+        o = '.. _{0}:'.format(name)
+        self._add(_indent(o, indent), block)
+
     def content(self, content, indent=0, wrap=True, block='_all'):
         if isinstance(content, list):
             for line in content:

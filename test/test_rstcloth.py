@@ -346,3 +346,19 @@ class TestRstCloth(TestCase):
     def test_ontent_indent_long_nowrap(self):
         self.r.content('the ' * 100, wrap=False, indent=3 ,block='ct5')
         self.assertEqual(self.r.docs['ct5'], [ '   ' + 'the ' * 99 + 'the'])
+
+    def test_ref_target_named(self):
+        self.r.ref_target(name="foo-are-magic-ref0", block='ref0')
+        self.assertEqual(self.r.docs['ref0'], ['.. _foo-are-magic-ref0:'])
+
+    def test_ref_target_unnamed(self):
+        self.r.ref_target("foo-are-magic-ref1", block='ref1')
+        self.assertEqual(self.r.docs['ref1'], ['.. _foo-are-magic-ref1:'])
+
+    def test_ref_target_named_with_indent(self):
+        self.r.ref_target(name="foo-are-magic-ref2", indent=3, block='ref2')
+        self.assertEqual(self.r.docs['ref2'], ['   .. _foo-are-magic-ref2:'])
+
+    def test_ref_target_unnamed_wo_indent(self):
+        self.r.ref_target("foo-are-magic-ref3", 3, block='ref3')
+        self.assertEqual(self.r.docs['ref3'], ['   .. _foo-are-magic-ref3:'])
