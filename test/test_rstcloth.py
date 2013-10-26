@@ -205,11 +205,11 @@ class TestRstCloth(TestCase):
         self.assertEqual(self.r.docs['hd1'], ['---------', 'test text', '---------'])
 
     def test_heading_one(self):
-        self.r.heading('test heading', char='-', block='hd2')
+        self.r.heading('test heading', char='-', indent=0, block='hd2')
         self.assertEqual(self.r.docs['hd2'], ['test heading', '------------'])
 
     def test_heading_two(self):
-        self.r.heading('test heading', char='^', block='hd3')
+        self.r.heading('test heading', char='^', indent=0, block='hd3')
         self.assertEqual(self.r.docs['hd3'], ['test heading', '^^^^^^^^^^^^'])
 
     def test_h1(self):

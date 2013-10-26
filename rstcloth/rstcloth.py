@@ -193,7 +193,7 @@ class RstCloth(Cloth):
             content = fill(value, wrap=wrap).split('\n')
             for line in content:
                 output.append(_indent(line, 3))
- 
+
         if wrap is False and final is False:
             output.append(_indent(value, 3))
 
@@ -218,23 +218,23 @@ class RstCloth(Cloth):
         line = char * len(text)
         self._add([line, text, line], block)
 
-    def heading(self, text, char, block='_all'):
-        self._add([text, char * len(text)], block)
+    def heading(self, text, char, indent, block='_all'):
+        self._add(_indent([text, char * len(text)], indent), block=block)
 
-    def h1(self, text, block='_all'):
-        self.heading(text, char='=', block=block)
+    def h1(self, text, indent=0, block='_all'):
+        self.heading(text, char='=', indent=indent, block=block)
 
-    def h2(self, text, block='_all'):
-        self.heading(text, char='-', block=block)
+    def h2(self, text, indent=0, block='_all'):
+        self.heading(text, char='-', indent=indent, block=block)
 
-    def h3(self, text, block='_all'):
-        self.heading(text, char='~', block=block)
+    def h3(self, text, indent=0, block='_all'):
+        self.heading(text, char='~', indent=indent, block=block)
 
-    def h4(self, text, block='_all'):
-        self.heading(text, char='+', block=block)
+    def h4(self, text, indent=0, block='_all'):
+        self.heading(text, char='+', indent=indent, block=block)
 
-    def h5(self, text, block='_all'):
-        self.heading(text, char='^', block=block)
+    def h5(self, text, indent=0, block='_all'):
+        self.heading(text, char='^', indent=indent, block=block)
 
-    def h6(self, text, block='_all'):
-        self.heading(text, char=';', block=block)
+    def h6(self, text, indent=0, block='_all'):
+        self.heading(text, char=';', indent=indent, block=block)

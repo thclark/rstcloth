@@ -41,7 +41,6 @@ def write_file(list, filename):
         for line in list:
             f.write(line + '\n')
 
-
 class Cloth(object):
     def get_block(self, block='_all'):
         if block not in self.docs:
@@ -84,4 +83,3 @@ class Cloth(object):
             raise Exception('Error: ' + block + ' not specified.')
         else:
             write_file(self.docs[block], filename)
-
