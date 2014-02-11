@@ -6,9 +6,12 @@ tags:
 	@find . -name "*.py" | grep -v "\.\#" | etags --output TAGS -
 	@echo [dev]: regenerated tags
 
-test:
-	@nosetests-2.7
-	@nosetests3
+test: test2 test3
+
+test2:
+	nosetest2 
+test3:
+	nosetest3
 
 push-git:
 	git push cyborg
