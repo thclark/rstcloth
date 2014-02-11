@@ -9,9 +9,9 @@ tags:
 test: test2 test3
 
 test2:
-	nosetest2 
+	nosetests2 
 test3:
-	nosetest3
+	nosetests3
 
 push-git:
 	git push cyborg
