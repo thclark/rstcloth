@@ -22,7 +22,7 @@ import textwrap
 
 import yaml
 
-from rstcloth.rstcloth import RstCloth
+from rstcloth import RstCloth
 
 def normalize_cell_height(rowdata):
     """
