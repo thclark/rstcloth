@@ -52,9 +52,9 @@ def _indent(content, indent):
     else:
         indent = ' ' * indent
         if isinstance(content, list):
-            return [ indent + line for line in content ]
+            return [ ''.join([indent, line]) for line in content ]
         else:
-            return indent + content
+            return ''.join([indent, content])
 
 class RstCloth(Cloth):
     def __init__(self):
@@ -95,8 +95,7 @@ class RstCloth(Cloth):
             o.append('')
 
             if isinstance(content, list):
-                for line in content:
-                    o.append(_indent(line, 3))
+                o.extend(_indent(content, 3))
             else:
                 o.append(_indent(content, 3))
 
