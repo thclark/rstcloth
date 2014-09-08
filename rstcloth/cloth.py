@@ -33,7 +33,10 @@ class Cloth(object):
 
         dirpath = filename.rsplit('/', 1)[0]
         if os.path.isdir(dirpath) is False:
-            os.makedirs(dirpath)
+            try:
+                os.makedirs(dirpath)
+            except OSError:
+                logger.warning('{0} exists. ignoring.')
 
         with open(filename, 'w') as f:
             f.write('\n'.join(self._data))

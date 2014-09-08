@@ -15,6 +15,7 @@
 # Authors: Sam Kleinman, Kay Kim
 from __future__ import unicode_literals
 
+import os
 import sys
 import argparse
 import string
@@ -411,6 +412,13 @@ class TableBuilder(object):
     def write(self, outputfile=None):
         if outputfile is None:
             outputfile = get_outputfile(self.inputfile)
+
+        dirpath = os.path.dirname(outputfile)
+        if os.path.isdir(dirpath) is False:
+            try:
+                os.makedirs(dirpath)
+            except OSError:
+                logger.warning('{0} exists. ignoring.')
 
         with open(outputfile, 'w') as f:
             for line in self.output:
