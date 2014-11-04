@@ -36,7 +36,7 @@ class Cloth(object):
             try:
                 os.makedirs(dirpath)
             except OSError:
-                logger.warning('{0} exists. ignoring.')
+                logger.info('{0} exists. ignoring.'.format(dirpath))
 
         with open(filename, 'w') as f:
             f.write('\n'.join(self._data))

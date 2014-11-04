@@ -418,7 +418,7 @@ class TableBuilder(object):
             try:
                 os.makedirs(dirpath)
             except OSError:
-                logger.warning('{0} exists. ignoring.')
+                logger.debug('{0} exists. ignoring.'.format(dirpath))
 
         with open(outputfile, 'w') as f:
             for line in self.output:
