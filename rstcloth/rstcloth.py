@@ -207,11 +207,11 @@ class RstCloth(Cloth):
             for line in lines:
                 self._add(_indent(line, indent))
 
-    def title(self, text, char='=', block=None):
+    def title(self, text, char='=', indent=0, block=None):
         line = char * len(text)
-        self._add([line, text, line])
+        self._add(_indent([line, text, line], indent))
 
-    def heading(self, text, char, indent, block=None):
+    def heading(self, text, char, indent=0, block=None):
         self._add(_indent([text, char * len(text)], indent))
 
     def h1(self, text, indent=0, block=None):
