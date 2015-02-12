@@ -133,7 +133,7 @@ class RstCloth(Cloth):
 
     @staticmethod
     def _paragraph(content, wrap=True):
-        return [ i.strip() for i in fill(content, wrap=wrap).split('\n') ]
+        return [ i.rstrip() for i in fill(content, wrap=wrap).split('\n') ]
 
     def replacement(self, name, value, indent=0, block=None):
         output = '.. |{0}| replace:: {1}'.format(name, value)
