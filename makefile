@@ -6,12 +6,24 @@ tags:
 	@find . -name "*.py" | grep -v "\.\#" | etags --output TAGS -
 	@echo [dev]: regenerated tags
 
-test: test2 test3
+nosetests:
+	@echo "[testing] running nosetests"
+	nosetests
+ifeq ($(shell test -f /etc/arch-release && echo arch || echo Linux),arch)
+	nosetests2
+endif
 
-test2:
-	nosetests2 
-test3:
-	nosetests3
+
+pyflakes:
+	@echo "[testing] running pyflakes:"
+	pyflakes rstcloth
+
+pep8:
+	@echo "[testing] running pep8: "
+	pep8 --max-line-length=100 rstcloth
+
+
+test: nosetests pyflakes pep8
 
 push-git:
 	git push cyborg
@@ -25,4 +37,3 @@ setup-git:
 
 release:push-git
 	python setup.py sdist upload
-
