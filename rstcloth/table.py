@@ -16,7 +16,7 @@
 from __future__ import unicode_literals
 
 import os
-import sys
+import logging
 import argparse
 import string
 import textwrap
@@ -25,6 +25,9 @@ import yaml
 
 from rstcloth import RstCloth
 
+logger = logging.getLogger('rstcloth.table')
+
+
 def normalize_cell_height(rowdata):
     """
     Normalize cells in the rowdata so that each cell has the same height;
@@ -32,11 +35,12 @@ def normalize_cell_height(rowdata):
     lines when printed as others in the row. Mutates 'rowdata' in place by only
     appeneding rather than resetting the reference.
     """
-    maxlines = max([ len(cell) for cell in rowdata])
+    maxlines = max([len(cell) for cell in rowdata])
 
     for cell in rowdata:
         for x in range(maxlines - len(cell)):
-            cell.append( ' '  )
+            cell.append(' ')
+
 
 def fill(string, first=0, hanging=0):
     first_indent = ' ' * first
@@ -51,6 +55,7 @@ def fill(string, first=0, hanging=0):
 #
 # Generating parts of the table.
 
+
 class TableData(object):
     def __init__(self, num_columns=None):
         self.num_columns = num_columns
@@ -60,7 +65,7 @@ class TableData(object):
         self.final = False
 
     def _add(self, row, location='row'):
-        if self.final == True:
+        if self.final is True:
             pass
         else:
             if location == 'header':
@@ -82,7 +87,7 @@ class TableData(object):
     def add_row(self, row):
         if self._columns(len(row)):
             self.num_rows += 1
-            self._add({ self.num_rows: row }, location='row')
+            self._add({self.num_rows: row}, location='row')
 
     def add_header(self, row):
         if self._columns(len(row)):
@@ -98,6 +103,7 @@ class TableData(object):
 
     def finalize(self):
         self.final = True
+
 
 class YamlTable(TableData):
     def __init__(self, inputfile, num_columns=None):
@@ -148,6 +154,7 @@ class YamlTable(TableData):
 #
 # Reading and processing input, and rendering table.
 
+
 class dict2obj(object):
     """
     Converts a dict (from yaml, in this case) into a Python object.
@@ -158,7 +165,7 @@ class dict2obj(object):
 
     def __getattr__(self, key):
         value = self.__dict__['d'][key]
-        if type(value) == type({}):
+        if isinstance(value, dict):
             return dict2obj(value)
 
         return value
@@ -167,8 +174,10 @@ class dict2obj(object):
 #
 # Interaction
 
+
 class OutputTable(object):
     pass
+
 
 class RstTable(OutputTable):
     def __init__(self, imported_table):
@@ -228,7 +237,11 @@ class RstTable(OutputTable):
         """
         Produces and returns row deliminiters for restructured text tables.
         """
-        return '+' + delim + str(delim + '+' + delim).join([ delim * width for width in self.columnwidths ]) + delim + '+'
+
+        return ('+' + delim +
+                str(delim + '+' + delim).join([delim * width
+                                               for width in self.columnwidths]) +
+                delim + '+')
 
     def _get_row(self, rowdata):
         """
@@ -239,7 +252,8 @@ class RstTable(OutputTable):
             if len(rowlines) > 0:
                 rowlines.append('\n')
 
-            rowlines.append( '| ' + ' | '.join([ line[idx].ljust(self.columnwidths[idx]) for idx in range(len(line)) ]) + ' |' )
+            rowlines.append('| ' + ' | '.join([line[idx].ljust(self.columnwidths[idx])
+                                               for idx in range(len(line))]) + ' |')
 
         return ''.join(rowlines)
 
@@ -308,13 +322,14 @@ class RstTable(OutputTable):
 #
 # Outputs a list-table
 
+
 class ListTable(OutputTable):
     def __init__(self, imported_table, widths=None, indent=0):
         self.table = imported_table
         self.indent = indent
 
         if widths is not None:
-            self.widths = [ str(i) for i in widths ]
+            self.widths = [str(i) for i in widths]
         else:
             self.widths = None
 
@@ -362,13 +377,13 @@ class ListTable(OutputTable):
 # such as to handle links or to handle
 # code-block directives
 
+
 class HtmlTable(OutputTable):
     def __init__(self, imported_table):
-        self.tags = { 'tr': '<tr>',
-            'th': '<th>',
-            'td': '<td>',
-            'table': '<table>'
-            }
+        self.tags = {'tr': '<tr>',
+                     'th': '<th>',
+                     'td': '<td>',
+                     'table': '<table>'}
 
         self.table = imported_table
         self.output = self.render_table()
@@ -377,7 +392,7 @@ class HtmlTable(OutputTable):
         o = [self.tags['table']]
 
         if self.table.header is not None:
-            o.append(self._process_html_row(self.tags['tr'], self.tags['th'], self.table.header) )
+            o.append(self._process_html_row(self.tags['tr'], self.tags['th'], self.table.header))
 
         for row in self.table.rows:
             o.append(self._process_html_row(self.tags['tr'], self.tags['td'], row.values()))
@@ -386,7 +401,7 @@ class HtmlTable(OutputTable):
         return o
 
     def _process_html_row(self, tag, tagchild, rowdata):
-        row=[]
+        row = []
         row.append(tag)
         row.append("\n")
 
@@ -404,6 +419,7 @@ class HtmlTable(OutputTable):
 
     def _get_ending_tag(self, tag):
         return string.join(tag.split('<', 1), '</')
+
 
 class TableBuilder(object):
     def __init__(self, table):
@@ -432,15 +448,17 @@ class TableBuilder(object):
 #
 # Interface.
 
+
 def get_outputfile(inputfile, outputfile):
     if outputfile is None:
         return inputfile.rsplit('.')[0] + '.rst'
     else:
         return outputfile
 
-formats = { 'rst': RstTable,
-            'list': ListTable,
-            'html': HtmlTable }
+formats = {'rst': RstTable,
+           'list': ListTable,
+           'html': HtmlTable}
+
 
 def user_input():
     parser = argparse.ArgumentParser('YAML to (RST/HTML) Table Builder')
@@ -452,6 +470,7 @@ def user_input():
                         help='output table format.')
 
     return parser.parse_args()
+
 
 def main():
     ui = user_input()

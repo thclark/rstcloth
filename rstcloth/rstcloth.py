@@ -21,6 +21,7 @@ from rstcloth.cloth import Cloth
 
 logger = logging.getLogger("rstcloth")
 
+
 def fill(string, first=0, hanging=0, wrap=True):
     first_indent = ' ' * first
     hanging_indent = ' ' * hanging
@@ -35,16 +36,17 @@ def fill(string, first=0, hanging=0, wrap=True):
     else:
         content = string.split('\n')
         if first == hanging:
-            return '\n'.join([ first_indent + line for line in content ])
+            return '\n'.join([first_indent + line for line in content])
         elif first > hanging:
             indent_diff = first - hanging
             o = indent_diff * ' '
-            o += '\n'.join([ hanging_indent + line for line in content ])
+            o += '\n'.join([hanging_indent + line for line in content])
             return o
         elif first < hanging:
             indent_diff = hanging - first
-            o = '\n'.join([ hanging_indent + line for line in content ])
+            o = '\n'.join([hanging_indent + line for line in content])
             return o[indent_diff:]
+
 
 def _indent(content, indent):
     if indent == 0:
@@ -52,9 +54,10 @@ def _indent(content, indent):
     else:
         indent = ' ' * indent
         if isinstance(content, list):
-            return [ ''.join([indent, line]) for line in content ]
+            return [''.join([indent, line]) for line in content]
         else:
             return ''.join([indent, content])
+
 
 class RstCloth(Cloth):
     def __init__(self):
@@ -80,7 +83,7 @@ class RstCloth(Cloth):
             raise Exception("Count of newlines must be a positive int.")
 
     def directive(self, name, arg=None, fields=None, content=None, indent=0, wrap=True, block=None):
-        o = [ ]
+        o = []
 
         o.append('.. {0}::'.format(name))
 
@@ -133,7 +136,7 @@ class RstCloth(Cloth):
 
     @staticmethod
     def _paragraph(content, wrap=True):
-        return [ i.rstrip() for i in fill(content, wrap=wrap).split('\n') ]
+        return [i.rstrip() for i in fill(content, wrap=wrap).split('\n')]
 
     def replacement(self, name, value, indent=0, block=None):
         output = '.. |{0}| replace:: {1}'.format(name, value)
@@ -141,7 +144,7 @@ class RstCloth(Cloth):
 
     def codeblock(self, content, indent=0, wrap=True, language=None, block=None):
         if language is None:
-            o = [ '::', _indent(content, 3) ]
+            o = ['::', _indent(content, 3)]
             self._add(_indent(o, indent))
         else:
             self.directive(name='code-block', arg=language, content=content, indent=indent)
@@ -163,7 +166,6 @@ class RstCloth(Cloth):
     def li(self, content, bullet='-', indent=0, wrap=True, block=None):
         bullet = bullet + ' '
         hanging_indent_len = indent + len(bullet)
-        hanging_indent = ' ' * hanging_indent_len
 
         if isinstance(content, list):
             content = bullet + '\n'.join(content)
@@ -173,7 +175,7 @@ class RstCloth(Cloth):
             self._add(fill(content, indent, indent, wrap))
 
     def field(self, name, value, indent=0, wrap=True, block=None):
-        output = [ ':{0}:'.format(name) ]
+        output = [':{0}:'.format(name)]
 
         if len(name) + len(value) < 60:
             output[0] += ' ' + value

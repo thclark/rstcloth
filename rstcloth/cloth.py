@@ -17,6 +17,7 @@ import logging
 
 logger = logging.getLogger("rstcloth.cloth")
 
+
 class Cloth(object):
     def print_content(self, block_order=None):
         if block_order is not None:
