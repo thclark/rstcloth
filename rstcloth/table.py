@@ -140,9 +140,9 @@ class YamlTable(TableData):
     def read_data(self, datafile):
         with open(datafile, "rt") as f:
             parsed = yaml.load_all(f)
-            layout = dict2obj(parsed.next())
-            meta = dict2obj(parsed.next())
-            content = dict2obj(parsed.next())
+            layout = dict2obj(next(parsed))
+            meta = dict2obj(next(parsed))
+            content = dict2obj(next(parsed))
 
         if layout.section != 'layout':
             exit('layout document in "' + datafile + '" is malformed.')
@@ -167,7 +167,11 @@ class dict2obj(object):
         self.__dict__['d'] = d
 
     def __getattr__(self, key):
-        value = self.__dict__['d'][key]
+        try:
+            value = self.__dict__['d'][key]
+        except KeyError:
+            raise AttributeError(key)
+
         if isinstance(value, dict):
             return dict2obj(value)
 
@@ -214,7 +218,7 @@ class RstTable(OutputTable):
 
             current_widths = []
 
-            for line in row.values()[0]:
+            for line in next(iter(row.values())):
                 _width = []
                 for subline in line.split('\n'):
                     _width.append(len(subline))
