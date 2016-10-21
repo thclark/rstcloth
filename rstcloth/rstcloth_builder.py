@@ -487,12 +487,12 @@ class Table(object):
         )
         return max_
 
-    def render(self):
+    def render(self, padding=3):
         """
 
         :return:
         """
-        widths = [self._max_col_with(x) for x in range(self.num_columns)]
+        widths = [self._max_col_with(x) + padding for x in range(self.num_columns)]
         f = io.StringIO()
 
         # first right out the header
