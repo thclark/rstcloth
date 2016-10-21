@@ -19,19 +19,19 @@ logger = logging.getLogger("rstcloth.cloth")
 
 
 class Cloth(object):
-    def print_content(self, block_order=None):
-        if block_order is not None:
-            logger.warning('block_order "{0}" is no longer supported'.format(block_order))
+    def print_content(self):
+        """
 
+        :return:
+        """
         print('\n'.join(self._data))
 
-    def print_block(self, block='_all'):
-        logger.warning('print_block is no longer supported')
+    def write(self, filename):
+        """
 
-    def write(self, filename, block_order=None):
-        if block_order is not None:
-            logger.warning('block_order "{0}" is no longer supported'.format(block_order))
-
+        :param filename:
+        :return:
+        """
         dirpath = filename.rsplit('/', 1)[0]
         if os.path.isdir(dirpath) is False:
             try:
@@ -43,13 +43,18 @@ class Cloth(object):
             f.write('\n'.join(self._data))
             f.write('\n')
 
-    def write_block(self, filename, block='_all'):
-        logger.warning('write_block is no longer supported')
-
     @property
     def data(self):
+        """
+
+        :return:
+        """
         return self._data
 
     @data.setter
     def data(self):
+        """
+
+        :return:
+        """
         raise AttributeError('cannot set the RstCloth.data attribute directly')

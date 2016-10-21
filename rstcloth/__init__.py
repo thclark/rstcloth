@@ -12,4 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+from rstcloth.rstcloth_builder import RstCloth
+
 __version__ = '0.2.6.dev0'
