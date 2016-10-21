@@ -498,7 +498,7 @@ class Table(object):
         # first right out the header
         f.write('+')
         for width in widths:
-            f.write('=' * width + '+')
+            f.write('-' * width + '+')
         f.write('\n')
 
         f.write('|')
