@@ -32,7 +32,7 @@ class Cloth(object):
         if block_order is not None:
             logger.warning('block_order "{0}" is no longer supported'.format(block_order))
 
-        dirpath = filename.rsplit('/', 1)[0]
+        dirpath = os.path.dirname(filename)
         if os.path.isdir(dirpath) is False:
             try:
                 os.makedirs(dirpath)
