@@ -32,7 +32,8 @@ def fill(string, first=0, hanging=0, wrap=True):
                              break_on_hyphens=False,
                              break_long_words=False,
                              initial_indent=first_indent,
-                             subsequent_indent=hanging_indent)
+                             subsequent_indent=hanging_indent,
+                             replace_whitespace=False)  # https://docs.python.org/2/library/textwrap.html#textwrap.TextWrapper.replace_whitespace
     else:
         content = string.split('\n')
         if first == hanging:
@@ -168,7 +169,7 @@ class RstCloth(Cloth):
         hanging_indent_len = indent + len(bullet)
 
         if isinstance(content, list):
-            content = bullet + '\n'.join(content)
+            content = '\n'.join(bullet + item for item in content)
             self._add(fill(content, indent, indent + hanging_indent_len, wrap))
         else:
             content = bullet + fill(content, 0, len(bullet), wrap)
