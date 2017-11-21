@@ -21,7 +21,7 @@ import argparse
 import string
 import textwrap
 
-import yaml
+#import yaml
 
 try:
     from rstcloth import RstCloth
