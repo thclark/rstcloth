@@ -2,7 +2,7 @@ from setuptools import setup
 import rstcloth
 
 setup(
-    name='rstcloth',
+    name='rstcloth2',
     description='A simple Python API for generating RestructuredText.',
     version=rstcloth.__version__,
     author='Sam Kleinman',

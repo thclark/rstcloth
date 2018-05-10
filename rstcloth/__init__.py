@@ -15,4 +15,4 @@
 
 from rstcloth.rstcloth_builder import RstCloth
 
-__version__ = '0.2.6.dev0'
+__version__ = '0.3.0'
