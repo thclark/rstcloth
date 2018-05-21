@@ -19,6 +19,9 @@ logger = logging.getLogger("rstcloth.cloth")
 
 
 class Cloth(object):
+    def __init__(self):
+        self._data = []
+
     def print_content(self, block_order=None):
         if block_order is not None:
             logger.warning('block_order "{0}" is no longer supported'.format(block_order))
