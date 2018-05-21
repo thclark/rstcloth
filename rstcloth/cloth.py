@@ -54,5 +54,9 @@ class Cloth(object):
         return self._data
 
     @data.setter
-    def data(self):
-        raise AttributeError('cannot set the RstCloth.data attribute directly')
+    def data(self, value):
+        raise AttributeError(
+            'cannot set the {}.data attribute directly'.format(
+                self.__class__.__name__
+            )
+        )
