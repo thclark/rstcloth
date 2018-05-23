@@ -18,7 +18,6 @@ from __future__ import unicode_literals
 import os
 import logging
 import argparse
-import string
 import textwrap
 
 import yaml
@@ -425,7 +424,7 @@ class HtmlTable(OutputTable):
         return ''.join(row)
 
     def _get_ending_tag(self, tag):
-        return string.join(tag.split('<', 1), '</')
+        return tag.replace('<', '</', 1)
 
 
 class TableBuilder(object):
