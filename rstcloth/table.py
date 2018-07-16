@@ -336,8 +336,6 @@ class ListTable(OutputTable):
         self.output = self.r.data
 
     def _render_table(self):
-        b = '_all'
-
         rows = []
         _fields = []
         if self.table.header is not None:
@@ -352,19 +350,19 @@ class ListTable(OutputTable):
 
         rows.extend(self.table.rows)
 
-        self.r.directive('list-table', fields=_fields, indent=self.indent, block=b)
+        self.r.directive('list-table', fields=_fields, indent=self.indent)
 
-        self.r.newline(block=b)
+        self.r.newline()
 
         for row in rows:
             r = row[idx]
 
-            self.r.li(r[0], bullet='* -', indent=self.indent + 3, wrap=False, block=b)
-            self.r.newline(block=b)
+            self.r.li(r[0], bullet='* -', indent=self.indent + 3, wrap=False)
+            self.r.newline()
 
             for cell in r[1:]:
-                self.r.li(cell, bullet='  -',  indent=self.indent + 3, wrap=False, block=b)
-                self.r.newline(block=b)
+                self.r.li(cell, bullet='  -',  indent=self.indent + 3, wrap=False)
+                self.r.newline()
 
             idx += 1
 
