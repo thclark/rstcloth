@@ -25,9 +25,6 @@ class Cloth(object):
 
         print('\n'.join(self._data))
 
-    def print_block(self, block='_all'):
-        logger.warning('print_block is no longer supported')
-
     def write(self, filename, block_order=None):
         if block_order is not None:
             logger.warning('block_order "{0}" is no longer supported'.format(block_order))
@@ -42,9 +39,6 @@ class Cloth(object):
         with open(filename, 'w') as f:
             f.write('\n'.join(self._data))
             f.write('\n')
-
-    def write_block(self, filename, block='_all'):
-        logger.warning('write_block is no longer supported')
 
     @property
     def data(self):
