@@ -19,14 +19,10 @@ import os
 import logging
 import argparse
 import string
-import textwrap
 
 import yaml
 
-try:
-    from rstcloth import RstCloth
-except ImportError:
-    from rstcloth.rstcloth import RstCloth
+from .rstcloth import RstCloth
 
 logger = logging.getLogger('rstcloth.table')
 
@@ -451,6 +447,7 @@ def get_outputfile(inputfile, outputfile):
     else:
         return outputfile
 
+
 formats = {'rst': RstTable,
            'list': ListTable,
            'html': HtmlTable}
@@ -479,6 +476,7 @@ def main():
     table = TableBuilder(formats[table_data.format](table_data))
 
     table.write(get_outputfile(ui.input, ui.output))
+
 
 if __name__ == '__main__':
     main()

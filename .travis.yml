@@ -7,7 +7,8 @@ python:
   - 'pypy3'
 install:
   - pip install .
-  - pip install pyflakes pep8
+  - if [[ $TRAVIS_PYTHON_VERSION = '3.3' ]]; then pip install 'pyflakes<2.0.0'; fi
+  - pip install nose pycodestyle pyflakes
 script: make test
 notifications:
   flowdock:

@@ -18,12 +18,14 @@ pyflakes:
 	@echo "[testing] running pyflakes:"
 	pyflakes rstcloth
 
-pep8:
-	@echo "[testing] running pep8: "
-	pep8 --max-line-length=100 rstcloth
+pycodestyle:
+	@echo "[testing] running pycodestyle: "
+	pycodestyle --max-line-length=100 rstcloth
 
 
-test: nosetests pyflakes pep8
+test: nosetests pyflakes pycodestyle
+
+pep8: pycodestyle
 
 push-git:
 	git push cyborg
