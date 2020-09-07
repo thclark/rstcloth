@@ -470,11 +470,7 @@ class Table(object):
         :param idx: the index to return max width of
         :return:
         """
-        max_ = max(
-            [len(self.header[idx])] +
-            [len(x[idx]) for x in self.rows]
-        )
-        return max_
+        return max([len(self.header[idx])] + [len(x[idx]) for x in self.rows])
 
     def render(self, padding=3):
         """
