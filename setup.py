@@ -16,7 +16,7 @@ with open("LICENSE") as f:
 
 setup(
     name="rstcloth",
-    version="0.3.0",
+    version="0.3.1",
     py_modules=[],
     url="https://www.github.com/thclark/rstcloth",
     license="MIT",
