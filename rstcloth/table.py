@@ -1,29 +1,14 @@
-# Copyright 2012-2013 10gen, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# Authors: Sam Kleinman, Kay Kim
 from __future__ import unicode_literals
 
-import os
-import logging
 import argparse
-import string
-
+import logging
+import os
+import yaml
 
 from .rstcloth import RstCloth
 
-logger = logging.getLogger('rstcloth.table')
+
+logger = logging.getLogger("rstcloth.table")
 
 
 def normalize_cell_height(rowdata):
@@ -37,7 +22,7 @@ def normalize_cell_height(rowdata):
 
     for cell in rowdata:
         for x in range(maxlines - len(cell)):
-            cell.append(' ')
+            cell.append(" ")
 
 
 ###################################
@@ -53,16 +38,16 @@ class TableData(object):
         self.rows = []
         self.final = False
 
-    def _add(self, row, location='row'):
+    def _add(self, row, location="row"):
         if self.final is True:
             pass
         else:
-            if location == 'header':
+            if location == "header":
                 self.header.append(row)
-            elif location == 'row':
+            elif location == "row":
                 self.rows.append(row)
             else:
-                raise Exception('tables can only have headers or rows.')
+                raise Exception("tables can only have headers or rows.")
 
     def _columns(self, num_columns):
         if self.num_columns is None:
@@ -71,12 +56,12 @@ class TableData(object):
         elif self.num_columns == num_columns:
             return True
         elif num_columns != self.num_columns:
-            raise Exception('rows must have the same number of columns as the table.')
+            raise Exception("rows must have the same number of columns as the table.")
 
     def add_row(self, row):
         if self._columns(len(row)):
             self.num_rows += 1
-            self._add({self.num_rows: row}, location='row')
+            self._add({self.num_rows: row}, location="row")
 
     def add_header(self, row):
         if self._columns(len(row)):
@@ -88,7 +73,7 @@ class TableData(object):
             for i in row:
                 o.append(i)
 
-            self._add({0: o}, location='header')
+            self._add({0: o}, location="header")
 
     def finalize(self):
         self.final = True
@@ -105,7 +90,7 @@ class YamlTable(TableData):
         self.parse_table(layout, meta, content)
 
     def parse_table(self, layout, meta, content):
-        if hasattr(meta, 'format'):
+        if hasattr(meta, "format"):
             self.format = meta.format
 
         if layout.header:
@@ -130,14 +115,15 @@ class YamlTable(TableData):
             meta = dict2obj(next(parsed))
             content = dict2obj(next(parsed))
 
-        if layout.section != 'layout':
+        if layout.section != "layout":
             exit('layout document in "' + datafile + '" is malformed.')
-        elif meta.section != 'meta':
+        elif meta.section != "meta":
             exit('meta document in "' + datafile + '" is malformed.')
-        elif content.section != 'content':
+        elif content.section != "content":
             exit('content document in "' + datafile + '" is malformed.')
 
         return layout, meta, content
+
 
 ###################################
 #
@@ -150,11 +136,11 @@ class dict2obj(object):
     """
 
     def __init__(self, d):
-        self.__dict__['d'] = d
+        self.__dict__["d"] = d
 
     def __getattr__(self, key):
         try:
-            value = self.__dict__['d'][key]
+            value = self.__dict__["d"][key]
         except KeyError:
             raise AttributeError(key)
 
@@ -162,6 +148,7 @@ class dict2obj(object):
             return dict2obj(value)
 
         return value
+
 
 ###################################
 #
@@ -206,7 +193,7 @@ class RstTable(OutputTable):
 
             for line in next(iter(row.values())):
                 _width = []
-                for subline in line.split('\n'):
+                for subline in line.split("\n"):
                     _width.append(len(subline))
                 current_widths.append(max(_width))
 
@@ -226,15 +213,12 @@ class RstTable(OutputTable):
     #
     # Building the table representation
 
-    def _get_row_line(self, delim='-'):
+    def _get_row_line(self, delim="-"):
         """
         Produces and returns row deliminiters for restructured text tables.
         """
 
-        return ('+' + delim +
-                str(delim + '+' + delim).join([delim * width
-                                               for width in self.columnwidths]) +
-                delim + '+')
+        return "+" + delim + str(delim + "+" + delim).join([delim * width for width in self.columnwidths]) + delim + "+"
 
     def _get_row(self, rowdata):
         """
@@ -243,25 +227,26 @@ class RstTable(OutputTable):
         rowlines = []
         for line in zip(*rowdata):
             if len(rowlines) > 0:
-                rowlines.append('\n')
+                rowlines.append("\n")
 
-            rowlines.append('| ' + ' | '.join([line[idx].ljust(self.columnwidths[idx])
-                                               for idx in range(len(line))]) + ' |')
+            rowlines.append(
+                "| " + " | ".join([line[idx].ljust(self.columnwidths[idx]) for idx in range(len(line))]) + " |"
+            )
 
-        return ''.join(rowlines)
+        return "".join(rowlines)
 
     def _get_header_row(self, header):
-        o = '| '
+        o = "| "
 
         cols = range(len(self.columnwidths))
         for header, rowidths, idx in zip(header, self.columnwidths, cols):
-            o += header.ljust(self.columnwidths[idx]) + ' | '
+            o += header.ljust(self.columnwidths[idx]) + " | "
 
         return o
 
     def process_table_content(self):
         self.table_data = []
-        if not hasattr(self, 'num_columns'):
+        if not hasattr(self, "num_columns"):
             self.num_columns = None
         # Compare cell widths of the header  with the
         # max cell widths stored in the global var tempcolumnwidths
@@ -281,7 +266,7 @@ class RstTable(OutputTable):
             index = index + 1
 
             for line in row[index]:
-                parsed_row.append(line.split('\n'))
+                parsed_row.append(line.split("\n"))
 
             # process the data to ensure the table is big enough.
             if self.num_columns is None:
@@ -303,13 +288,14 @@ class RstTable(OutputTable):
 
         if self.table.header is not None:
             o.append(self._get_header_row(self.table.header))
-            o.append(self._get_row_line('='))
+            o.append(self._get_row_line("="))
 
         for row in self.table_data:
             o.append(self._get_row(row))
             o.append(self._get_row_line())
 
         return o
+
 
 ###################################
 #
@@ -334,32 +320,33 @@ class ListTable(OutputTable):
         rows = []
         _fields = []
         if self.table.header is not None:
-            _fields.append(('header-rows', '1'))
+            _fields.append(("header-rows", "1"))
             rows.append(self.table.header[0])
             idx = 0
         else:
             idx = 1
 
         if self.widths is not None:
-            _fields.append(('widths', ' '.join(self.widths)))
+            _fields.append(("widths", " ".join(self.widths)))
 
         rows.extend(self.table.rows)
 
-        self.r.directive('list-table', fields=_fields, indent=self.indent)
+        self.r.directive("list-table", fields=_fields, indent=self.indent)
 
         self.r.newline()
 
         for row in rows:
             r = row[idx]
 
-            self.r.li(r[0], bullet='* -', indent=self.indent + 3, wrap=False)
+            self.r.li(r[0], bullet="* -", indent=self.indent + 3, wrap=False)
             self.r.newline()
 
             for cell in r[1:]:
-                self.r.li(cell, bullet='  -',  indent=self.indent + 3, wrap=False)
+                self.r.li(cell, bullet="  -", indent=self.indent + 3, wrap=False)
                 self.r.newline()
 
             idx += 1
+
 
 ###################################
 #
@@ -371,24 +358,21 @@ class ListTable(OutputTable):
 
 class HtmlTable(OutputTable):
     def __init__(self, imported_table):
-        self.tags = {'tr': '<tr>',
-                     'th': '<th>',
-                     'td': '<td>',
-                     'table': '<table>'}
+        self.tags = {"tr": "<tr>", "th": "<th>", "td": "<td>", "table": "<table>"}
 
         self.table = imported_table
         self.output = self.render_table()
 
     def render_table(self):
-        o = [self.tags['table']]
+        o = [self.tags["table"]]
 
         if self.table.header is not None:
-            o.append(self._process_html_row(self.tags['tr'], self.tags['th'], self.table.header))
+            o.append(self._process_html_row(self.tags["tr"], self.tags["th"], self.table.header))
 
         for row in self.table.rows:
-            o.append(self._process_html_row(self.tags['tr'], self.tags['td'], row.values()))
+            o.append(self._process_html_row(self.tags["tr"], self.tags["td"], row.values()))
 
-        o.append(self._get_ending_tag(self.tags['table']))
+        o.append(self._get_ending_tag(self.tags["table"]))
         return o
 
     def _process_html_row(self, tag, tagchild, rowdata):
@@ -406,10 +390,10 @@ class HtmlTable(OutputTable):
         row.append("\n")
         row.append(self._get_ending_tag(tag))
 
-        return ''.join(row)
+        return "".join(row)
 
     def _get_ending_tag(self, tag):
-        return tag.replace('<', '</', 1)
+        return tag.replace("<", "</", 1)
 
 
 class TableBuilder(object):
@@ -425,15 +409,16 @@ class TableBuilder(object):
             try:
                 os.makedirs(dirpath)
             except OSError:
-                logger.debug('{0} exists. ignoring.'.format(dirpath))
+                logger.debug("{0} exists. ignoring.".format(dirpath))
 
-        with open(outputfile, 'w') as f:
+        with open(outputfile, "w") as f:
             for line in self.output:
-                f.write(line + '\n')
+                f.write(line + "\n")
 
     def print_table(self):
         for line in self.output:
             print(line)
+
 
 ###################################
 #
@@ -442,24 +427,21 @@ class TableBuilder(object):
 
 def get_outputfile(inputfile, outputfile):
     if outputfile is None:
-        return inputfile.rsplit('.')[0] + '.rst'
+        return inputfile.rsplit(".")[0] + ".rst"
     else:
         return outputfile
 
 
-formats = {'rst': RstTable,
-           'list': ListTable,
-           'html': HtmlTable}
+formats = {"rst": RstTable, "list": ListTable, "html": HtmlTable}
 
 
 def user_input():
-    parser = argparse.ArgumentParser('YAML to (RST/HTML) Table Builder')
-    parser.add_argument('input', nargs='?', help='path of source yaml file.')
+    parser = argparse.ArgumentParser("YAML to (RST/HTML) Table Builder")
+    parser.add_argument("input", nargs="?", help="path of source yaml file.")
 
     output_help = 'path of output file. by default, the input file name with an ".rst" extension.'
-    parser.add_argument('output', nargs='?', default=None, help=output_help)
-    parser.add_argument('--type', '-t', choices=formats.keys(), default='rst',
-                        help='output table format.')
+    parser.add_argument("output", nargs="?", default=None, help=output_help)
+    parser.add_argument("--type", "-t", choices=formats.keys(), default="rst", help="output table format.")
 
     return parser.parse_args()
 
@@ -477,5 +459,5 @@ def main():
     table.write(get_outputfile(ui.input, ui.output))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
