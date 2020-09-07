@@ -1,8 +1,5 @@
-<!--- The following badges don't work because they're templated... uncomment when filled out
 [![Build Status](https://travis-ci.com/thclark/rstcloth.svg?branch=master)](https://travis-ci.com/thclark/rstcloth)
-[![codecov](https://codecov.io/gh/{{codecov_username}}/{{library_name}}/branch/master/graph/badge.svg)](https://codecov.io/gh/{{codecov_username}}/{{library_name}})
---->
-
+[![codecov](https://codecov.io/gh/thclark/rstcloth/branch/master/graph/badge.svg)](https://codecov.io/gh/thclark/rstcloth)
 [![PyPI version](https://badge.fury.io/py/rstcloth.svg)](https://badge.fury.io/py/rstcloth)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)

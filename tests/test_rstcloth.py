@@ -1,6 +1,6 @@
 import unittest
 
-from rstcloth.rstcloth_builder import RstCloth
+from rstcloth import RstCloth
 from .base import BaseTestCase
 
 

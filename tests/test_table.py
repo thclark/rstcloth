@@ -1,12 +1,11 @@
 import unittest
 
-from rstcloth.table import HtmlTable, TableData
+from rstcloth import HtmlTable, TableData
 from .base import BaseTestCase
 
 
 class TestHtmlTable(BaseTestCase):
-    """ Testing operation of the Table generator
-    """
+    """Testing operation of the Table generator"""
 
     @classmethod
     def setUp(cls):
