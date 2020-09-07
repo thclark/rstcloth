@@ -1,5 +1,6 @@
 from unittest import TestCase
-from rstcloth.rstcloth import RstCloth
+from rstcloth.rstcloth_builder import RstCloth
+
 
 class TestRstCloth(TestCase):
     @classmethod
@@ -64,7 +65,6 @@ class TestRstCloth(TestCase):
         self.assertEqual(self.r.data[1], '')
         self.assertEqual(self.r.data[2], '   string')
         self.assertEqual(self.r.data[3], '   second')
-
 
     def test_directive_simple_indent(self):
         self.r.directive('test', indent=3)

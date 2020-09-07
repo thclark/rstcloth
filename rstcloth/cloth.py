@@ -23,6 +23,11 @@ class Cloth(object):
         print('\n'.join(self._data))
 
     def write(self, filename):
+        """
+
+        :param filename:
+        :return:
+        """
         dirpath = os.path.dirname(filename)
         if os.path.isdir(dirpath) is False:
             try:
@@ -36,12 +41,21 @@ class Cloth(object):
 
     @property
     def data(self):
+        """
+
+        :return:
+        """
         return self._data
 
     @data.setter
     def data(self, value):
+        """
+
+        :return:
+        """
         raise AttributeError(
             'cannot set the {}.data attribute directly'.format(
                 self.__class__.__name__
             )
         )
+

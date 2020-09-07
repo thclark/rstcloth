@@ -13,3 +13,5 @@
 # limitations under the License.
 
 __version__ = '0.2.7.dev0'
+
+from rstcloth.rstcloth_builder import RstCloth
