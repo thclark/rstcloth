@@ -7,7 +7,7 @@ logger = logging.getLogger("rstcloth.cloth")
 
 class Cloth(object):
     def print_content(self):
-        print("\n".join(self._data))
+        print("\n".join(self._data))  # noqa: T001
 
     def write(self, filename):
         """

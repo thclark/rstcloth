@@ -417,7 +417,7 @@ class TableBuilder(object):
 
     def print_table(self):
         for line in self.output:
-            print(line)
+            print(line)  # noqa: T001
 
 
 ###################################

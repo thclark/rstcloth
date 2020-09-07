@@ -1,5 +1,5 @@
 <!--- The following badges don't work because they're templated... uncomment when filled out
-[![Build Status](https://travis-ci.{{com_or_org}}/{{travis_username}}/{{library_name}}.svg?branch=master)](https://travis-ci.{{com_or_org}}/{{travis_username}}/{{library_name}})
+[![Build Status](https://travis-ci.com/thclark/rstcloth.svg?branch=master)](https://travis-ci.com/thclark/rstcloth)
 [![codecov](https://codecov.io/gh/{{codecov_username}}/{{library_name}}/branch/master/graph/badge.svg)](https://codecov.io/gh/{{codecov_username}}/{{library_name}})
 --->
 

@@ -9,6 +9,7 @@ logger = logging.getLogger("rstcloth")
 
 # TODO REVIEW THIS ENTIRE FILE - ADDED BY A THIRD PARTY CONTRIBUTOR BUT FOR SOME REASON IT REDEFINES RSTCLOTH
 
+
 def fill(string, first=0, hanging=0, wrap=True, width=72):
     """
 
@@ -108,6 +109,7 @@ class RstCloth(Cloth):
 
         :param header: a list of header values (strings), to use for the table
         :param data: a list of lists of row data (same length as the header list each)
+        :param indent: something!
         :return:
         """
 
@@ -125,8 +127,8 @@ class RstCloth(Cloth):
         :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
         :return:
         """
-
-        o = []
+        logger.debug('Ignoring wrap parameter, presumably for api consistency. wrap=%s', wrap)
+        o = list()
         o.append('.. {0}::'.format(name))
 
         if arg is not None:
