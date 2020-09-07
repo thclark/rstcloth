@@ -1,0 +1,9 @@
+[paths]
+source =
+    rstcloth/
+
+[run]
+omit =
+    env/*
+    tests/*
+    */tests/*
