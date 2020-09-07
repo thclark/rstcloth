@@ -1,8 +1,3 @@
-.. rstcloth documentation master file, created by
-   sphinx-quickstart on Thu Oct 20 20:31:16 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 ========
 RstCloth
 ========
@@ -16,7 +11,7 @@ maintaining text easy and pleasurable. Humans can edit
 reStructuredText without the aide of complex editing tools, and the
 resulting source is easy to manipulate and process.
 
-One of the key features of reSturcturedText is it's relatively
+One of the key features of reStructuredText is it's relatively
 complete extension API, which makes it possible to minimize fragile
 repetitive structures in source files and increase the ease of
 production. While you can use these extensions to build
@@ -36,72 +31,37 @@ facilitates :
 - ensuring that the tool chain is easily debugable by using
   transparent intermediate formats.
 
-Example Use
------------
+Status
+------
 
-The following RstCloth code: ::
+RstCloth is undergoing ongoing development and expansion is not
+stable at this point. Current features and projects include:
 
-   from rstcloth import RstCloth
+- improve documentation.
 
-   d = RstCloth()
+- develop unit testing framework to ensure consistent API behavior.
 
+- build/extend a table generation API.
 
-   d.title('Example Use')
-   d.newline()
-   d.h2('Contents')
-   d.directive(name="contents", fields=[('local', ''), ('backlinks', 'None')])
-   d.newline()
-   d.h2('Code -- shebang')
-   d.codeblock('#!/usr/bin/env')
+- Add a chart generation API for ``sphinx-charts``.
 
-   d.print_content()
-
-Would result in the following reStructuredText: ::
-
-   ===========
-   Example Use
-   ===========
-
-   Contents
-   --------
-
-   .. contents::
-      :local:
-      :backlinks: None
-
-   Code -- shebang
-   ---------------
-
-   ::
-
-      #!/usr/bin/env
-
-Example 2
----------
-
-.. code-block::
-
-    doc = RstCloth(line_width=180)
-    doc.title('Example Document')
-    doc.newline()
-    doc.table(
-        ['Column 1', 'Column 2', 'Column 3'],
-        data=[
-            [1, 2, 3],
-            [4, 5, 6],
-            [7, 8, 9]
-        ]
-    )
-
-    doc.print_content()
+- improve paragraph level content generation API.
 
 
-Contents:
+.. _contents:
+
+Contents
+========
 
 .. toctree::
    :maxdepth: 2
 
+   self
+   installation
+   quick_start
    rstcloth
+   license
+   version_history
 
 
 Indices and tables
