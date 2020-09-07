@@ -10,6 +10,7 @@ logger = logging.getLogger("rstcloth")
 # TODO REVIEW THIS ENTIRE FILE - ADDED BY A THIRD PARTY CONTRIBUTOR BUT FOR SOME REASON IT REDEFINES RSTCLOTH
 
 
+
 def fill(string, first=0, hanging=0, wrap=True, width=72):
     """
 
