@@ -60,9 +60,6 @@ def _indent(content, indent):
 
 
 class RstCloth(Cloth):
-    def __init__(self):
-        self._data = []
-
     def _add(self, content, block=None):
         if block is not None:
             logger.warning('block "{0}" is no longer supported'.format(block))
