@@ -18,14 +18,11 @@ from __future__ import unicode_literals
 import os
 import logging
 import argparse
-import textwrap
+import string
 
 import yaml
 
-try:
-    from rstcloth import RstCloth
-except ImportError:
-    from rstcloth.rstcloth import RstCloth
+from .rstcloth import RstCloth
 
 logger = logging.getLogger('rstcloth.table')
 
@@ -43,15 +40,6 @@ def normalize_cell_height(rowdata):
         for x in range(maxlines - len(cell)):
             cell.append(' ')
 
-
-def fill(string, first=0, hanging=0):
-    first_indent = ' ' * first
-    hanging_indent = ' ' * hanging
-
-    return textwrap.fill(string,
-                         width=72,
-                         initial_indent=first_indent,
-                         subsequent_indent=hanging_indent)
 
 ###################################
 #
@@ -344,8 +332,6 @@ class ListTable(OutputTable):
         self.output = self.r.data
 
     def _render_table(self):
-        b = '_all'
-
         rows = []
         _fields = []
         if self.table.header is not None:
@@ -360,19 +346,19 @@ class ListTable(OutputTable):
 
         rows.extend(self.table.rows)
 
-        self.r.directive('list-table', fields=_fields, indent=self.indent, block=b)
+        self.r.directive('list-table', fields=_fields, indent=self.indent)
 
-        self.r.newline(block=b)
+        self.r.newline()
 
         for row in rows:
             r = row[idx]
 
-            self.r.li(r[0], bullet='* -', indent=self.indent + 3, wrap=False, block=b)
-            self.r.newline(block=b)
+            self.r.li(r[0], bullet='* -', indent=self.indent + 3, wrap=False)
+            self.r.newline()
 
             for cell in r[1:]:
-                self.r.li(cell, bullet='  -',  indent=self.indent + 3, wrap=False, block=b)
-                self.r.newline(block=b)
+                self.r.li(cell, bullet='  -',  indent=self.indent + 3, wrap=False)
+                self.r.newline()
 
             idx += 1
 
@@ -461,6 +447,7 @@ def get_outputfile(inputfile, outputfile):
     else:
         return outputfile
 
+
 formats = {'rst': RstTable,
            'list': ListTable,
            'html': HtmlTable}
@@ -489,6 +476,7 @@ def main():
     table = TableBuilder(formats[table_data.format](table_data))
 
     table.write(get_outputfile(ui.input, ui.output))
+
 
 if __name__ == '__main__':
     main()

@@ -10,7 +10,9 @@ setup(
     license='Apache',
     url='http://cyborginstitute.org/projects/rstcloth',
     packages=['rstcloth'],
-    setup_requires=['nose'],
+    install_requires=[
+        'PyYAML'
+    ],
     test_suite='test',
     classifiers=[
         'Programming Language :: Python',
