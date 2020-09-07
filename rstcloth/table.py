@@ -20,7 +20,7 @@ import logging
 import argparse
 import string
 
-import yaml
+#import yaml
 
 from .rstcloth import RstCloth
 
