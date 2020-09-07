@@ -346,3 +346,9 @@ class TestRstCloth(TestCase):
     def test_ref_target_unnamed_wo_indent(self):
         self.r.ref_target("foo-are-magic-ref3", 3)
         self.assertEqual(self.r.data, ['   .. _foo-are-magic-ref3:'])
+
+    def test_set_data(self):
+        with self.assertRaises(AttributeError) as exception:
+            self.r.data = []
+        self.assertIn('cannot set the RstCloth.data attribute directly',
+                      exception.exception.args)
