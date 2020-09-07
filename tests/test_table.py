@@ -1,6 +1,6 @@
 import unittest
 
-from rstcloth.table import HtmlTable, TableData
+from rstcloth import HtmlTable, TableData
 from .base import BaseTestCase
 
 
