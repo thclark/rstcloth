@@ -3,8 +3,8 @@ import unittest
 
 
 class BaseTestCase(unittest.TestCase):
-    """ Base test case:
-        - sets a path to the test data directory
+    """Base test case:
+    - sets a path to the test data directory
     """
 
     def setUp(self):
