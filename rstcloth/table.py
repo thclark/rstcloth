@@ -414,8 +414,7 @@ class TableBuilder(object):
                 f.write(line + "\n")
 
     def __str__(self):
-        for line in self.output:
-            print(line)
+        return "\n".join(self.output)
 
 
 ###################################
