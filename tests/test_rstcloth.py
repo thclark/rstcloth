@@ -398,5 +398,86 @@ class TestRstCloth(BaseTestCase):
         self.assertIn("cannot set the RstCloth.data attribute directly", exception.exception.args)
 
 
+class TestTable(unittest.TestCase):
+    """Testing operation of the Rst generator"""
+
+    def test_header_1_body_0(self):
+        r = RstCloth()
+        r.table(header=('span',), data=None)
+        expected = "\n+--------+\n" \
+                   "| span   |\n" \
+                   "+========+\n" \
+                   "+--------+\n"
+        given = r.data[0]
+        self.assertEqual(expected, given)
+
+    def test_header_1_body_1(self):
+        r = RstCloth()
+        r.table(header=('span',), data=((1,),))
+        expected = "\n+--------+\n" \
+                   "| span   |\n" \
+                   "+========+\n" \
+                   "| 1      |\n" \
+                   "+--------+\n"
+        given = r.data[0]
+        self.assertEqual(expected, given)
+
+    def test_header_2_body_0(self):
+        r = RstCloth()
+        r.table(header=('span', 'ham'), data='')
+        expected = "\n+--------+-------+\n" \
+                   "| span   | ham   |\n" \
+                   "+========+=======+\n" \
+                   "+--------+-------+\n"
+        given = r.data[0]
+        self.assertEqual(expected, given)
+
+    def test_header_2_body_1(self):
+        r = RstCloth()
+        r.table(header=('span', 'ham'), data=((1, 2),))
+        expected = "\n+--------+-------+\n" \
+                   "| span   | ham   |\n" \
+                   "+========+=======+\n" \
+                   "| 1      | 2     |\n" \
+                   "+--------+-------+\n"
+        given = r.data[0]
+        self.assertEqual(expected, given)
+
+    def test_header_2_body_2(self):
+        r = RstCloth()
+        r.table(header=('span', 'ham'), data=((1, 2), (3, 4)))
+        expected = "\n+--------+-------+\n" \
+                   "| span   | ham   |\n" \
+                   "+========+=======+\n" \
+                   "| 1      | 2     |\n" \
+                   "+--------+-------+\n" \
+                   "| 3      | 4     |\n" \
+                   "+--------+-------+\n"
+        given = r.data[0]
+        self.assertEqual(expected, given)
+
+    def test_table_list(self):
+        r = RstCloth()
+        headers = ['span', 'ham']
+        data = [
+            ['1', '2'],
+            ['3', '4']
+        ]
+        expected = [
+            '.. list-table::',
+            '   :header-rows: 1',
+            '',
+            '   * - span',
+            '     - ham',
+            '   * - 1',
+            '     - 2',
+            '   * - 3',
+            '     - 4',
+            ''
+        ]
+        r.table_list(headers, data)
+        self.assertEqual(r.data, expected)
+
+
 if __name__ == "__main__":
     unittest.main()
