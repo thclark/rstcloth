@@ -456,6 +456,28 @@ class TestTable(unittest.TestCase):
         given = r.data[0]
         self.assertEqual(expected, given)
 
+    def test_table_list(self):
+        r = RstCloth()
+        headers = ['span', 'ham']
+        data = [
+            ['1', '2'],
+            ['3', '4']
+        ]
+        expected = [
+            '.. list-table::',
+            '   :header-rows: 1',
+            '',
+            '   * - span',
+            '     - ham',
+            '   * - 1',
+            '     - 2',
+            '   * - 3',
+            '     - 4',
+            ''
+        ]
+        r.table_list(headers, data)
+        self.assertEqual(r.data, expected)
+
 
 if __name__ == "__main__":
     unittest.main()

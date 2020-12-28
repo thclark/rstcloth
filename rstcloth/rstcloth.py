@@ -122,6 +122,26 @@ class RstCloth(Cloth):
         )
         self._add(_indent("\n" + t + "\n", indent))
 
+    def table_list(self, headers, data, widths=None, indent=0):
+        _fields = []
+        rows = []
+        if headers:
+            _fields.append(("header-rows", "1"))
+            rows.extend([headers])
+        if widths is not None:
+            _fields.append(("widths", " ".join(widths)))
+
+        self.directive("list-table", fields=_fields, indent=indent)
+        self.newline()
+
+        if data:
+            rows.extend(data)
+        for row in rows:
+            self.li(row[0], bullet="* -", indent=indent + 3)
+            for cell in row[1:]:
+                self.li(cell, bullet="  -", indent=indent + 3)
+        self.newline()
+
     def directive(self, name, arg=None, fields=None, content=None, indent=0, wrap=True):
         """
 
