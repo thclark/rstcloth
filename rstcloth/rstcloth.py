@@ -1,6 +1,7 @@
 import io
 import logging
 import textwrap
+from tabulate import tabulate
 
 from rstcloth.cloth import Cloth
 
@@ -113,8 +114,13 @@ class RstCloth(Cloth):
         :return:
         """
 
-        t = Table(header, data=data)
-        self._add(_indent("\n" + t.render(), indent))
+        t = tabulate(
+            tabular_data=data,
+            headers=header,
+            tablefmt="grid",
+            disable_numparse=True
+        )
+        self._add(_indent("\n" + t + "\n", indent))
 
     def directive(self, name, arg=None, fields=None, content=None, indent=0, wrap=True):
         """
