@@ -312,8 +312,7 @@ class RstCloth(Cloth):
                 )
             )
         else:
-            content = bullet + fill(content, 0, len(bullet), wrap, width=self._line_width)
-            self._add(fill(content, indent, indent, wrap, width=self._line_width))
+            self._add(fill(bullet + content, indent, hanging_indent_len, wrap, width=self._line_width))
 
     def field(self, name, value, indent=0, wrap=True):
         """

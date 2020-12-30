@@ -264,6 +264,27 @@ class TestRstCloth(BaseTestCase):
         self.r.li(["foo", "bar"], bullet="*", indent=3)
         self.assertEqual(self.r.data, ["   * foo bar"])
 
+    def test_li_long(self):
+        given = " ".join(["spam"] * 20)
+        expected = "-" + " spam" * 14 + "\n" \
+                   + " " + " spam" * 6
+        self.r.li(given)
+        self.assertEqual(self.r.data, [expected])
+
+    def test_li_long_with_indent(self):
+        given = " ".join(["spam"] * 20)
+        expected = "   -" + " spam" * 13 + "\n" \
+                   + "    " + " spam" * 7
+        self.r.li(given, indent=3)
+        self.assertEqual(self.r.data, [expected])
+
+    def test_li_long_with_double_indent(self):
+        given = " ".join(["spam"] * 20)
+        expected = "      -" + " spam" * 13 + "\n" \
+                   + "       " + " spam" * 7
+        self.r.li(given, indent=6)
+        self.assertEqual(self.r.data, [expected])
+
     def test_field_simple(self):
         self.r.field("fname", "fvalue")
         self.assertEqual(self.r.data, [":fname: fvalue"])
