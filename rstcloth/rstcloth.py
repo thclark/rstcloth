@@ -1,14 +1,16 @@
 import io
 import logging
+import sys
 import textwrap
+import typing
 from tabulate import tabulate
-
-from rstcloth.cloth import Cloth
 
 
 logger = logging.getLogger("rstcloth")
 
 # TODO REVIEW THIS ENTIRE FILE - ADDED BY A THIRD PARTY CONTRIBUTOR BUT FOR SOME REASON IT REDEFINES RSTCLOTH
+
+t_content = typing.Union[str, typing.List[str]]
 
 
 def fill(string, first=0, hanging=0, wrap=True, width=72):
@@ -65,29 +67,42 @@ def _indent(content, indent):
             return "".join([indent, content])
 
 
-class RstCloth(Cloth):
+class RstCloth:
     """
-    RstCloth is the base object to create a ReStructuredText document programatically.
+    RstCloth is the base class to create a ReStructuredText document
+    programmatically.
 
-    :param line_width: (optional, default=72), the line width to use if wrap is set to true in an individual action.
-    :return:
+    :param stream: output stream for writing ReStructuredText content
+    :param line_width: Maximum length of each ReStructuredText content line.
+        In some edge cases this limit might be crossed.
     """
 
-    def __init__(self, line_width=72):
+    def __init__(self, stream: typing.TextIO = sys.stdout,
+                 line_width: int = 72) -> None:
+        self._stream = stream
         self._line_width = line_width
-        self._data = []
 
-    def _add(self, content):
+    def _add(self, content: t_content) -> None:
         """
+        Places content into output stream.
 
         :param content: the text to write into this element
-        :return:
         """
 
         if isinstance(content, list):
-            self._data.extend(content)
+            self._stream.write('\n'.join(content) + '\n')
         else:
-            self._data.append(content)
+            self._stream.write(content + "\n")
+
+    @property
+    def data(self) -> str:
+        """
+        Returns ReStructuredText document content as a string.
+
+        :return: the content of output stream
+        """
+        self._stream.seek(0)
+        return self._stream.read()
 
     def newline(self, count=1):
         """
