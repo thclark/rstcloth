@@ -97,21 +97,17 @@ class RstCloth:
         self._stream.seek(0)
         return self._stream.read()
 
-    def newline(self, count=1):
+    def newline(self, count: int = 1) -> None:
         """
+        Places a newline(s) into ReStructuredText document.
 
-        :param count: (optional default=1) the number of newlines to add
-        :return:
+        :param count: the number of newlines to add
         """
-
-        if isinstance(count, int):
-            if count == 1:
-                self._add("")
-            else:
-                # subtract one because every item gets one \n for free.
-                self._add("\n" * (count - 1))
+        if count == 1:
+            self._add("")
         else:
-            raise Exception("Count of newlines must be a positive int.")
+            # subtract one because every item gets one \n for free.
+            self._add("\n" * (count - 1))
 
     def table(self, header: typing.List,
               data: t_optional_2d_array, indent=0) -> None:
