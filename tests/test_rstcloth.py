@@ -106,15 +106,52 @@ class TestRstCloth(BaseTestCase):
     def test_directive_content_indent(self):
         self.r.directive("test", content="string", indent=3)
         self.assertEqual(self.r.data, "   .. test::\n"
-                                      "   \n"
+                                      "\n"
                                       "      string\n")
 
     def test_directive_with_multiline_content_indent(self):
         self.r.directive("test", indent=3, content=["string", "second"])
         self.assertEqual(self.r.data, "   .. test::\n"
-                                      "   \n"
+                                      "\n"
                                       "      string\n"
                                       "      second\n")
+
+    def test_directive_with_long_argument_indent(self):
+        argument = ' '.join(["spam"] * 20)
+        expected = (
+            "   .. test:: " + " ".join(["spam"] * 12) + "\n"
+            "      " + " ".join(["spam"] * 8) + "\n"
+        )
+        self.r.directive("test", arg=argument, indent=3)
+        self.assertEqual(self.r.data, expected)
+
+    def test_directive_with_long_field_indent(self):
+        content = ' '.join(["spam"] * 20)
+        expected = (
+            "   .. test::\n"
+            "      :name: " + " ".join(["spam"] * 12) + "\n"
+            "         " + " ".join(["spam"] * 8) + "\n"
+        )
+        self.r.directive("test", indent=3, fields=[("name", content)])
+        self.assertEqual(self.r.data, expected)
+
+    def test_directive_with_long_content_indent(self):
+        content = ' '.join(["test"] * 20)
+        expected = (
+            "   .. test::\n"
+            "\n"
+            "      " + " ".join(["test"] * 13) + "\n"
+            "      " + " ".join(["test"] * 7) + "\n"
+        )
+        self.r.directive("test", indent=3, content=content)
+        self.assertEqual(self.r.data, expected)
+
+    def test_directive_very_long_with_argument(self):
+        given = "my very long directive with spam spam spam spam ham bacon " \
+                "and eggs"
+        expected = "   .. {given}::\n      spam\n".format(given=given)
+        self.r.directive(given, arg='spam', indent=3)
+        self.assertEqual(self.r.data, expected)
 
     def test_single_role_no_text(self):
         ret = self.r.role("test", "value")

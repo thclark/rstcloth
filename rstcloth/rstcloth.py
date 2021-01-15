@@ -1,5 +1,4 @@
 import io
-import logging
 import sys
 import textwrap
 import typing
@@ -8,11 +7,10 @@ from tabulate import tabulate
 from rstcloth.utils import first_whitespace_position
 
 
-logger = logging.getLogger("rstcloth")
-
 # TODO REVIEW THIS ENTIRE FILE - ADDED BY A THIRD PARTY CONTRIBUTOR BUT FOR SOME REASON IT REDEFINES RSTCLOTH
 
 t_content = typing.Union[str, typing.List[str]]
+t_fields = typing.Iterable[typing.Tuple[str, str]]
 
 
 def fill(string, first=0, hanging=0, wrap=True, width=72):
@@ -180,37 +178,56 @@ class RstCloth:
                 self.li(cell, bullet="  -", indent=indent + 3)
         self.newline()
 
-    def directive(self, name, arg=None, fields=None, content=None, indent=0, wrap=True):
+    def directive(self, name: str, arg: str = None, fields: t_fields = None,
+                  content: t_content = None, indent: int = 0) -> None:
         """
+        Constructs reStructuredText directive.
 
         :param name: the directive itself to use
         :param arg: the argument to pass into the directive
         :param fields: fields to append as children underneath the directive
         :param content: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
+        :param indent: indentation depth
         """
-        logger.debug("Ignoring wrap parameter, presumably for api consistency. wrap=%s", wrap)
-        o = list()
-        o.append(".. {0}::".format(name))
-
-        if arg is not None:
-            o[0] += " " + arg
+        if arg is None:
+            marker = ".. {type}::".format(
+                type=name
+            )
+            self._add(_indent(marker, indent))
+        else:
+            first_whitespace = first_whitespace_position(arg)
+            # If directive itself is too long to be fitted in a line or
+            # directive with an argument can't be wrapped without breaking
+            # the directive in half then it is better to exceed the line width
+            # limitation.
+            if len(name) + first_whitespace + indent + 6 > self._line_width:
+                marker = ".. {type}::".format(
+                    type=name
+                )
+                self._add(_indent(marker, indent))
+                self.content(arg, indent=indent + 3)
+            else:
+                marker = ".. {type}:: {argument}".format(
+                    type=name,
+                    argument=arg
+                )
+                result = self.fill(
+                    marker,
+                    initial_indent=indent,
+                    subsequent_indent=indent + 3
+                )
+                self._add(result)
 
         if fields is not None:
             for k, v in fields:
-                o.append(_indent(":" + k + ": " + str(v), 3))
+                self.field(name=k, value=v, indent=indent + 3)
 
         if content is not None:
-            o.append("")
-
-            if isinstance(content, list):
-                o.extend(_indent(content, 3))
-            else:
-                o.append(_indent(content, 3))
-
-        self._add(_indent(o, indent))
+            if isinstance(content, str):
+                content = [content]
+            self.newline()
+            for line in content:
+                self.content(line, indent=indent + 3)
 
     @staticmethod
     def role(name, value, text=None):
