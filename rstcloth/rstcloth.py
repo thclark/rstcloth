@@ -14,43 +14,6 @@ t_fields = typing.Iterable[typing.Tuple[str, str]]
 t_optional_2d_array = typing.Optional[typing.List[typing.List]]
 
 
-def fill(string, first=0, hanging=0, wrap=True, width=72):
-    """
-
-    :param string:
-    :param first:
-    :param hanging:
-    :param wrap:
-    :param width:
-    :return:
-    """
-    first_indent = " " * first
-    hanging_indent = " " * hanging
-
-    if wrap is True:
-        return textwrap.fill(
-            string,
-            width=width,
-            break_on_hyphens=False,
-            break_long_words=False,
-            initial_indent=first_indent,
-            subsequent_indent=hanging_indent,
-        )
-    else:
-        content = string.split("\n")
-        if first == hanging:
-            return "\n".join([first_indent + line for line in content])
-        elif first > hanging:
-            indent_diff = first - hanging
-            o = indent_diff * " "
-            o += "\n".join([hanging_indent + line for line in content])
-            return o
-        elif first < hanging:
-            indent_diff = hanging - first
-            o = "\n".join([hanging_indent + line for line in content])
-            return o[indent_diff:]
-
-
 def _indent(content: t_content, indent: int) -> str:
     """
     Prepends each nonempty line in content parameter with spaces.
@@ -328,44 +291,37 @@ class RstCloth:
         else:
             self.directive(name="code-block", arg=language, content=content, indent=indent)
 
-    def footnote(self, ref, text, indent=0, wrap=True):
+    def footnote(self, ref: str, text: str, indent: int = 0) -> None:
         """
+        Constructs footnote directive.
 
         :param ref: the reference value
         :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
+        :param indent: indentation depth
         """
         self._add(
-            fill(
+            self.fill(
                 ".. [#{0}] {1}".format(ref, text),
                 indent,
-                indent + 3,
-                wrap,
-                width=self._line_width,
+                indent + 3
             )
         )
 
-    def definition(self, name, text, indent=0, wrap=True, bold=False):
+    def definition(self, name: str, text: str,
+                   indent: int = 0, bold: bool = False) -> None:
         """
+        Constructs definition list item.
 
         :param name: the name of the definition
         :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :param bold:
-        :return:
+        :param indent: indentation depth
+        :param bold: should definition name be bolded
         """
-        o = []
-
         if bold is True:
             name = self.bold(name)
 
-        o.append(_indent(name, indent))
-        o.append(fill(text, indent + 3, indent + 3, wrap=wrap, width=self._line_width))
-
-        self._add(o)
+        self._add(self.fill(name, indent, indent))
+        self._add(self.fill(text, indent + 3, indent + 3))
 
     def li(self, content: t_content,
            bullet: str = "-", indent: int = 0) -> None:

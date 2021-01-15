@@ -236,6 +236,11 @@ class TestRstCloth(BaseTestCase):
         self.assertEqual(self.r.data, "defitem\n"
                                       "   this is def text\n")
 
+    def test_definition_bold(self):
+        self.r.definition("defitem", "this is def text", bold=True)
+        self.assertEqual(self.r.data, "**defitem**\n"
+                                      "   this is def text\n")
+
     def test_definition_with_indent(self):
         self.r.definition("defitem", "this is def text", indent=3)
         self.assertEqual(self.r.data, "   defitem\n"
