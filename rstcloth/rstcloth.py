@@ -512,6 +512,29 @@ class RstCloth:
             )
         )
 
+    def table_of_contents(self, name: str = None, depth: int = None,
+                          backlinks: str = None) -> None:
+        """
+        Constructs table of contents.
+
+        :param name: table of contents alternative title
+        :param depth: the number of section levels that are collected
+            in the table of contents
+        :param backlinks: generate links from section headers back to
+            the table of contents entries, the table of contents itself,
+            or generate no backlinks
+        """
+        options = []
+        if depth:
+            options.append(('depth', str(depth)))
+        if backlinks in ['entry', 'top', 'none']:
+            options.append(('backlinks', backlinks))
+        self.directive(
+            name='contents',
+            arg=name,
+            fields=options
+        )
+
 
 class Table(object):
     def __init__(self, header, data=None):

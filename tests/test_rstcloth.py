@@ -509,6 +509,22 @@ class TestRstCloth(BaseTestCase):
                    '   Spacer 0 30\n'
         self.assertEqual(self.r.data, expected)
 
+    def test_table_of_contents(self):
+        self.r.table_of_contents(name='')
+        expected = '.. contents::\n'
+        self.assertEqual(self.r.data, expected)
+
+    def test_table_of_contents_options(self):
+        self.r.table_of_contents(
+            name='Table of Contents',
+            depth=2,
+            backlinks='entry'
+        )
+        expected = '.. contents:: Table of Contents\n' \
+                   '   :depth: 2\n' \
+                   '   :backlinks: entry\n'
+        self.assertEqual(self.r.data, expected)
+
 
 class TestTable(unittest.TestCase):
     """Testing operation of the Rst generator"""
