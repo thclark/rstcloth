@@ -481,6 +481,34 @@ class TestRstCloth(BaseTestCase):
         expected = ':Version: 1.0\n'
         self.assertEqual(self.r.data, expected)
 
+    def test_page_break(self):
+        self.r.page_break()
+        expected = '.. raw:: pdf\n' \
+                   '\n' \
+                   '   PageBreak\n'
+        self.assertEqual(self.r.data, expected)
+
+    def test_page_break_template(self):
+        self.r.page_break(template='spam')
+        expected = '.. raw:: pdf\n' \
+                   '\n' \
+                   '   PageBreak spam\n'
+        self.assertEqual(self.r.data, expected)
+
+    def test_frame_break(self):
+        self.r.frame_break(heights=100)
+        expected = '.. raw:: pdf\n' \
+                   '\n' \
+                   '   FrameBreak 100\n'
+        self.assertEqual(self.r.data, expected)
+
+    def test_spacer(self):
+        self.r.spacer(horizontal=0, vertical=30)
+        expected = '.. raw:: pdf\n' \
+                   '\n' \
+                   '   Spacer 0 30\n'
+        self.assertEqual(self.r.data, expected)
+
 
 class TestTable(unittest.TestCase):
     """Testing operation of the Rst generator"""

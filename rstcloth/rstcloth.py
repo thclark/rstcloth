@@ -478,6 +478,40 @@ class RstCloth:
     status = functools.partialmethod(field, name='Status')
     version = functools.partialmethod(field, name='Version')
 
+    # raw directives
+    def page_break(self, template: str = None) -> None:
+        """
+        Constructs page break.
+        """
+        if template is None:
+            content = 'PageBreak'
+        else:
+            content = 'PageBreak {template}'.format(template=template)
+        self.directive(name='raw', arg='pdf', content=content)
+
+    def frame_break(self, heights: int) -> None:
+        """
+        Constructs frame break.
+        """
+        self.directive(
+            name='raw',
+            arg='pdf',
+            content='FrameBreak {0}'.format(heights)
+        )
+
+    def spacer(self, horizontal: int, vertical: int) -> None:
+        """
+        Constructs a spacer.
+        """
+        self.directive(
+            name='raw',
+            arg='pdf',
+            content='Spacer {horizontal} {vertical}'.format(
+                horizontal=horizontal,
+                vertical=vertical
+            )
+        )
+
 
 class Table(object):
     def __init__(self, header, data=None):
