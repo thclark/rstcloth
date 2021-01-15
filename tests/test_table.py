@@ -1,10 +1,9 @@
 import unittest
 
 from rstcloth import HtmlTable, TableData
-from .base import BaseTestCase
 
 
-class TestHtmlTable(BaseTestCase):
+class TestHtmlTable(unittest.TestCase):
     """Testing operation of the Table generator"""
 
     @classmethod

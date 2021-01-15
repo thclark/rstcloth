@@ -2,10 +2,9 @@ import io
 import unittest
 
 from rstcloth import RstCloth
-from .base import BaseTestCase
 
 
-class TestRstCloth(BaseTestCase):
+class TestRstCloth(unittest.TestCase):
     @classmethod
     def setUp(cls):
         cls.r = RstCloth(stream=io.StringIO())
