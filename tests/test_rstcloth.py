@@ -525,6 +525,11 @@ class TestRstCloth(BaseTestCase):
                    '   :backlinks: entry\n'
         self.assertEqual(self.r.data, expected)
 
+    def test_transition_marker(self):
+        self.r.transition_marker()
+        expected = '---------\n'
+        self.assertEqual(self.r.data, expected)
+
 
 class TestTable(unittest.TestCase):
     """Testing operation of the Rst generator"""

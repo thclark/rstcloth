@@ -535,6 +535,12 @@ class RstCloth:
             fields=options
         )
 
+    def transition_marker(self) -> None:
+        """
+        Constructs transition marker.
+        """
+        self._add('---------')
+
 
 class Table(object):
     def __init__(self, header, data=None):
