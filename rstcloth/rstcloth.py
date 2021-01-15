@@ -276,15 +276,6 @@ class RstCloth:
         """
         return "[#{0}]".format(name)
 
-    def _paragraph(self, content, wrap=True):
-        """
-
-        :param content: the text to write into this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
-        """
-        return [i.rstrip() for i in fill(content, wrap=wrap, width=self._line_width).split("\n")]
-
     def replacement(self, name, value, indent=0):
         """
 
@@ -414,22 +405,16 @@ class RstCloth:
         o = ".. _{0}:".format(name)
         self._add(_indent(o, indent))
 
-    def content(self, content, indent=0, wrap=True):
+    def content(self, content: t_content, indent: int = 0) -> None:
         """
+        Constructs paragraph's content.
 
         :param content: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
+        :param indent: indentation depth
         """
         if isinstance(content, list):
-            for line in content:
-                self._add(_indent(line, indent))
-        else:
-            lines = self._paragraph(content, wrap)
-
-            for line in lines:
-                self._add(_indent(line, indent))
+            content = ' '.join(content)
+        self._add(self.fill(content, indent, indent))
 
     def title(self, text, char="=", indent=0):
         """

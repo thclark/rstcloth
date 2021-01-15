@@ -368,8 +368,7 @@ class TestRstCloth(BaseTestCase):
 
     def test_content_list(self):
         self.r.content(["this is sparta", "this is spinal tap"])
-        self.assertEqual(self.r.data, "this is sparta\n"
-                                      "this is spinal tap\n")
+        self.assertEqual(self.r.data, "this is sparta this is spinal tap\n")
 
     def test_content_indent_string(self):
         self.r.content("this is sparta", indent=3)
@@ -377,8 +376,7 @@ class TestRstCloth(BaseTestCase):
 
     def test_content_indent_list(self):
         self.r.content(["this is sparta", "this is spinal tap"], indent=3)
-        self.assertEqual(self.r.data, "   this is sparta\n"
-                                      "   this is spinal tap\n")
+        self.assertEqual(self.r.data, "   this is sparta this is spinal tap\n")
 
     def test_content_long(self):
         self.r.content("the " * 100)
@@ -395,22 +393,18 @@ class TestRstCloth(BaseTestCase):
     def test_content_indent_long(self):
         given = "the " * 100
         expected = (
-            "   the" + " the" * 17 + "\n"
-            "   " + "the " * 17 + "the\n"
-            "   " + "the " * 17 + "the\n"
-            "   " + "the " * 17 + "the\n"
-            "   " + "the " * 17 + "the\n"
-            "   " + "the " * 9 + "the\n"
+            "   the" + " the" * 16 + "\n"
+            "   " + "the " * 16 + "the\n"
+            "   " + "the " * 16 + "the\n"
+            "   " + "the " * 16 + "the\n"
+            "   " + "the " * 16 + "the\n"
+            "   " + "the " * 14 + "the\n"
         )
         self.r.content(given, indent=3)
         self.assertEqual(
             self.r.data,
             expected
         )
-
-    def test_content_indent_long_nowrap(self):
-        self.r.content("the " * 100, wrap=False, indent=3)
-        self.assertEqual(self.r.data, "   " + "the " * 99 + "the\n")
 
     def test_ref_target_named(self):
         self.r.ref_target(name="foo-are-magic-ref0")
