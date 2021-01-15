@@ -518,6 +518,21 @@ class TestTable(unittest.TestCase):
         given = r.data
         self.assertEqual(expected, given)
 
+    def test_header_2_body_2_indent(self):
+        r = RstCloth(stream=io.StringIO())
+        r.table(header=['span', 'ham'], data=[[1, 2], [3, 4]], indent=3)
+        expected = "\n" \
+                   "   +--------+-------+\n" \
+                   "   | span   | ham   |\n" \
+                   "   +========+=======+\n" \
+                   "   | 1      | 2     |\n" \
+                   "   +--------+-------+\n" \
+                   "   | 3      | 4     |\n" \
+                   "   +--------+-------+\n" \
+                   "\n"
+        given = r.data
+        self.assertEqual(expected, given)
+
     def test_table_list(self):
         r = RstCloth(stream=io.StringIO())
         headers = ['span', 'ham']

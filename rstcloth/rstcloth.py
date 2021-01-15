@@ -11,6 +11,7 @@ from rstcloth.utils import first_whitespace_position
 
 t_content = typing.Union[str, typing.List[str]]
 t_fields = typing.Iterable[typing.Tuple[str, str]]
+t_optional_2d_array = typing.Optional[typing.List[typing.List]]
 
 
 def fill(string, first=0, hanging=0, wrap=True, width=72):
@@ -50,21 +51,26 @@ def fill(string, first=0, hanging=0, wrap=True, width=72):
             return o[indent_diff:]
 
 
-def _indent(content, indent):
+def _indent(content: t_content, indent: int) -> str:
     """
+    Prepends each nonempty line in content parameter with spaces.
 
-    :param content:
-    :param indent:
-    :return:
+    :param content: text to be indented
+    :param indent: indentation size
+    :return: modified content where each nonempty line is indented
     """
     if indent == 0:
         return content
-    else:
-        indent = " " * indent
-        if isinstance(content, list):
-            return ["".join([indent, line]) for line in content]
-        else:
-            return "".join([indent, content])
+    indent = ' ' * indent
+    if isinstance(content, str):
+        content = content.splitlines()
+    return '\n'.join(
+        [
+            indent + line
+            if line else line
+            for line in content
+        ]
+    )
 
 
 class RstCloth:
@@ -141,13 +147,15 @@ class RstCloth:
         else:
             raise Exception("Count of newlines must be a positive int.")
 
-    def table(self, header, data, indent=0):
+    def table(self, header: typing.List,
+              data: t_optional_2d_array, indent=0) -> None:
         """
+        Constructs grid table.
 
         :param header: a list of header values (strings), to use for the table
-        :param data: a list of lists of row data (same length as the header list each)
-        :param indent: something!
-        :return:
+        :param data: a list of lists of row data (same length as the header
+            list each)
+        :param indent: indentation depth
         """
 
         t = tabulate(
@@ -156,7 +164,7 @@ class RstCloth:
             tablefmt="grid",
             disable_numparse=True
         )
-        self._add(_indent("\n" + t + "\n", indent))
+        self._add("\n" + _indent(t, indent) + "\n")
 
     def table_list(self, headers, data, widths=None, indent=0):
         _fields = []
