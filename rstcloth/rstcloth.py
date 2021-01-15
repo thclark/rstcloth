@@ -464,6 +464,20 @@ class RstCloth:
     tip = functools.partialmethod(directive, name='tip')
     warning = functools.partialmethod(directive, name='warning')
 
+    # bibliographic fields
+    abstract = functools.partialmethod(field, name='Abstract')
+    address = functools.partialmethod(field, name='Address')
+    author = functools.partialmethod(field, name='Author')
+    authors = functools.partialmethod(field, name='Authors')
+    contact = functools.partialmethod(field, name='Contact')
+    copyright = functools.partialmethod(field, name='Copyright')
+    date = functools.partialmethod(field, name='Date')
+    dedication = functools.partialmethod(field, name='Dedication')
+    organization = functools.partialmethod(field, name='Organization')
+    revision = functools.partialmethod(field, name='Revision')
+    status = functools.partialmethod(field, name='Status')
+    version = functools.partialmethod(field, name='Version')
+
 
 class Table(object):
     def __init__(self, header, data=None):

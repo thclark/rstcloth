@@ -474,6 +474,13 @@ class TestRstCloth(BaseTestCase):
                    '   Danger!\n'
         self.assertEqual(self.r.data, expected)
 
+    def test_version(self):
+        self.r.version(
+            value='1.0'
+        )
+        expected = ':Version: 1.0\n'
+        self.assertEqual(self.r.data, expected)
+
 
 class TestTable(unittest.TestCase):
     """Testing operation of the Rst generator"""
