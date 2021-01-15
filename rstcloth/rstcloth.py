@@ -296,20 +296,29 @@ class RstCloth:
         output = ".. |{0}| replace:: {1}".format(name, value)
         self._add(_indent(output, indent))
 
-    def codeblock(self, content, indent=0, wrap=True, language=None):
+    def codeblock(self, content: t_content, indent: int = 0,
+                  language: str = None) -> None:
         """
+        Constructs literal block.
 
         :param content: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :param language:
-        :return:
+        :param indent: indentation depth
+        :param language: formal language indication for syntax
+            highlighter
+        :return: literal block
         """
         if language is None:
-            o = ["::", _indent(content, 3)]
-            self._add(_indent(o, indent))
+            self._add(
+                self.fill('::', initial_indent=indent)
+            )
         else:
-            self.directive(name="code-block", arg=language, content=content, indent=indent)
+            self.directive(
+                name="code-block",
+                arg=language,
+                indent=indent
+            )
+            self.newline()
+        self._add(_indent(content, indent + 3))
 
     def footnote(self, ref: str, text: str, indent: int = 0) -> None:
         """
