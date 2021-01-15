@@ -163,11 +163,11 @@ class TestRstCloth(BaseTestCase):
 
     def test_single_role_text(self):
         ret = self.r.role("test", "value", "link")
-        self.assertEqual(ret, ":test:`link <value>`")
+        self.assertEqual(ret, ":test:`link <value>`_")
 
     def test_multi_role_text(self):
         ret = self.r.role(["test", "role"], "value", "link")
-        self.assertEqual(ret, ":test:role:`link <value>`")
+        self.assertEqual(ret, ":test:role:`link <value>`_")
 
     def test_single_role_no_text_args(self):
         ret = self.r.role(name="test", value="value")
@@ -179,11 +179,11 @@ class TestRstCloth(BaseTestCase):
 
     def test_single_role_text_args(self):
         ret = self.r.role(name="test", value="value", text="link")
-        self.assertEqual(ret, ":test:`link <value>`")
+        self.assertEqual(ret, ":test:`link <value>`_")
 
     def test_multi_role_text_args(self):
         ret = self.r.role(name=["test", "role"], value="value", text="link")
-        self.assertEqual(ret, ":test:role:`link <value>`")
+        self.assertEqual(ret, ":test:role:`link <value>`_")
 
     def test_bold(self):
         ret = self.r.bold("text")

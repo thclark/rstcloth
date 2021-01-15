@@ -217,8 +217,8 @@ class RstCloth:
             for line in content:
                 self.content(line, indent=indent + 3)
 
-    @staticmethod
-    def role(name: t_content, value: str, text: str = None) -> str:
+    @classmethod
+    def role(cls, name: t_content, value: str, text: str = None) -> str:
         """
         Returns role with optional hyperlink.
 
@@ -234,7 +234,8 @@ class RstCloth:
         if text is None:
             return ":{0}:`{1}`".format(name, value)
         else:
-            return ":{0}:`{2} <{1}>`".format(name, value, text)
+            link = cls.inline_link(text=text, link=value)
+            return ":{0}:{1}".format(name, link)
 
     @staticmethod
     def bold(string: str) -> str:
