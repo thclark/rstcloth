@@ -286,7 +286,7 @@ class RstCloth:
         :param name: the text to write into this element
         :return: footnote reference
         """
-        return "[#{0}]".format(name)
+        return "[#{0}]_".format(name)
 
     def replacement(self, name: str, value: str, indent: int = 0) -> None:
         """

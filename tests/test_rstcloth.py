@@ -203,7 +203,7 @@ class TestRstCloth(BaseTestCase):
 
     def test_footnote_ref(self):
         ret = self.r.footnote_ref("name")
-        self.assertEqual(ret, "[#name]")
+        self.assertEqual(ret, "[#name]_")
 
     def test_codeblock_simple(self):
         self.r.codeblock("ls -lha")
