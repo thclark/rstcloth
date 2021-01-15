@@ -367,14 +367,14 @@ class RstCloth:
 
         self._add(o)
 
-    def li(self, content, bullet="-", indent=0, wrap=True):
+    def li(self, content: t_content,
+           bullet: str = "-", indent: int = 0) -> None:
         """
+        Constructs bullet list item.
 
         :param content: the text to write into this element
-        :param bullet: (optional, default='-') the character of the bullet
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
+        :param bullet: the character of the bullet
+        :param indent: indentation depth
         """
 
         bullet += " "
@@ -383,17 +383,14 @@ class RstCloth:
         if isinstance(content, list):
             content = bullet + "\n".join(content)
             self._add(
-                fill(
+                self.fill(
                     content,
                     indent,
-                    indent + hanging_indent_len,
-                    wrap,
-                    width=self._line_width,
+                    indent + hanging_indent_len
                 )
             )
         else:
-            content = bullet + fill(content, 0, len(bullet), wrap, width=self._line_width)
-            self._add(fill(content, indent, indent, wrap, width=self._line_width))
+            self._add(self.fill(bullet + content, indent, hanging_indent_len))
 
     def field(self, name: str, value: str, indent: int = 0) -> None:
         """
