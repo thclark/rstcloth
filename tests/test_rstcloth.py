@@ -311,7 +311,6 @@ class TestRstCloth(BaseTestCase):
     def test_field_simple_long_long(self):
         self.r.field("fname", "v" * 65)
         self.assertEqual(self.r.data, ":fname:\n"
-                                      "\n"
                                       "   " + "v" * 65 + "\n")
 
     def test_field_indent_simple(self):
@@ -329,18 +328,15 @@ class TestRstCloth(BaseTestCase):
     def test_field_indent_simple_long_long(self):
         self.r.field("fname", "v" * 62, indent=3)
         self.assertEqual(self.r.data, "   :fname:\n"
-                                      "   \n"
                                       "      " + "v" * 62 + "\n")
 
     def test_field_wrap_simple(self):
-        expected = (":fname:\n"
-                    "\n"
-                    "  " + " the" * 18 + "\n"
-                    "  " + " the" * 18 + "\n"
-                    "  " + " the" * 18 + "\n"
-                    "  " + " the" * 18 + "\n"
-                    "  " + " the" * 18 + "\n"
-                    "  " + " the" * 10 + "\n")
+        expected = (":fname:" + " the" * 16 + "\n"
+                    + "  " + " the" * 17 + "\n"
+                    + "  " + " the" * 17 + "\n"
+                    + "  " + " the" * 17 + "\n"
+                    + "  " + " the" * 17 + "\n"
+                    + "  " + " the" * 16 + "\n")
         self.r.field("fname", "the " * 100)
         self.assertEqual(
             self.r.data, expected
@@ -350,15 +346,21 @@ class TestRstCloth(BaseTestCase):
         self.r.field("fname", "the " * 100, indent=3)
         self.assertEqual(
             self.r.data,
-            "   :fname:\n"
-            "   \n"
-            "     " + " the" * 18 + "\n"
-            "     " + " the" * 18 + "\n"
-            "     " + " the" * 18 + "\n"
-            "     " + " the" * 18 + "\n"
-            "     " + " the" * 18 + "\n"
-            "     " + " the" * 10 + "\n"
+            "   :fname:" + " the" * 15 + "\n"
+            "     " + " the" * 16 + "\n"
+            "     " + " the" * 16 + "\n"
+            "     " + " the" * 16 + "\n"
+            "     " + " the" * 16 + "\n"
+            "     " + " the" * 16 + "\n"
+            "     " + " the" * 5 + "\n"
         )
+
+    def test_field_very_long_with_body(self):
+        given = "my very long field with spam spam spam spam spam ham bacon " \
+                "and eggs"
+        expected = "   :{given}:\n      spam\n".format(given=given)
+        self.r.field(name=given, value='spam', indent=3)
+        self.assertEqual(self.r.data, expected)
 
     def test_content_string(self):
         self.r.content("this is sparta")

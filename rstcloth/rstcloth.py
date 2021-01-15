@@ -5,6 +5,8 @@ import textwrap
 import typing
 from tabulate import tabulate
 
+from rstcloth.utils import first_whitespace_position
+
 
 logger = logging.getLogger("rstcloth")
 
@@ -81,6 +83,27 @@ class RstCloth:
                  line_width: int = 72) -> None:
         self._stream = stream
         self._line_width = line_width
+
+    def fill(self, text: str, initial_indent: int = 0,
+             subsequent_indent: int = 0) -> str:
+        """
+        Breaks text parameter into separate lines. Each line is indented
+        accordingly to *_indent parameters.
+
+        :param text: input string to be wrapped and indented
+        :param initial_indent: first line indentation size
+        :param subsequent_indent: subsequent lines indentation size
+        :return: wrapped and indented text
+        """
+        return textwrap.fill(
+            text=text,
+            width=self._line_width,
+            initial_indent=' ' * initial_indent,
+            subsequent_indent=' ' * subsequent_indent,
+            expand_tabs=False,
+            break_long_words=False,
+            break_on_hyphens=False
+        )
 
     def _add(self, content: t_content) -> None:
         """
@@ -356,34 +379,30 @@ class RstCloth:
             content = bullet + fill(content, 0, len(bullet), wrap, width=self._line_width)
             self._add(fill(content, indent, indent, wrap, width=self._line_width))
 
-    def field(self, name, value, indent=0, wrap=True):
+    def field(self, name: str, value: str, indent: int = 0) -> None:
         """
+        Constructs a field.
 
         :param name: the name of the field
         :param value: the value of the field
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
+        :param indent: indentation depth
         """
-        output = [":{0}:".format(name)]
-
-        if len(name) + len(value) < 60:
-            output[0] += " " + value
-            final = True
+        first_whitespace = first_whitespace_position(value)
+        if len(name) + first_whitespace + indent + 3 > self._line_width:
+            marker = ':{name}:'.format(name=name)
+            self._add(_indent(marker, indent))
+            self.content(value, indent=indent + 3)
         else:
-            output.append("")
-            final = False
-
-        if wrap is True and final is False:
-            content = fill(value, wrap=wrap, width=self._line_width).split("\n")
-            for line in content:
-                output.append(_indent(line, 3))
-
-        if wrap is False and final is False:
-            output.append(_indent(value, 3))
-
-        for line in output:
-            self._add(_indent(line, indent))
+            marker = ":{name}: {body}".format(
+                name=name,
+                body=value
+            )
+            result = self.fill(
+                marker,
+                initial_indent=indent,
+                subsequent_indent=indent + 3
+            )
+            self._add(result)
 
     def ref_target(self, name, indent=0):
         """
