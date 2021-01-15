@@ -218,13 +218,14 @@ class RstCloth:
                 self.content(line, indent=indent + 3)
 
     @staticmethod
-    def role(name, value, text=None):
+    def role(name: t_content, value: str, text: str = None) -> str:
         """
+        Returns role with optional hyperlink.
 
         :param name: the name of the role
         :param value: the value of the role
-        :param text: (optional, default=None) text after the role
-        :return:
+        :param text: text after the role
+        :return: role element
         """
 
         if isinstance(name, list):
@@ -236,58 +237,63 @@ class RstCloth:
             return ":{0}:`{2} <{1}>`".format(name, value, text)
 
     @staticmethod
-    def bold(string):
+    def bold(string: str) -> str:
         """
+        Returns strongly emphasised (boldface) text.
 
         :param string: the text to write into this element
-        :return:
+        :return: bolded text
         """
         return "**{0}**".format(string)
 
     @staticmethod
-    def emph(string):
+    def emph(string: str) -> str:
         """
+        Returns emphasised (italics) text.
 
         :param string: the text to write into this element
-        :return:
+        :return: emphasised text
         """
         return "*{0}*".format(string)
 
     @staticmethod
-    def pre(string):
+    def pre(string: str) -> str:
         """
+        Returns inline literals.
 
         :param string: the text to write into this element
-        :return:
+        :return: inline literals
         """
         return "``{0}``".format(string)
 
     @staticmethod
-    def inline_link(text, link):
+    def inline_link(text: str, link: str) -> str:
         """
+        Returns hyperlink reference.
 
         :param text: the printed value of the link
         :param link: the url the link should goto
-        :return:
+        :return: hyperlink reference
         """
         return "`{0} <{1}>`_".format(text, link)
 
     @staticmethod
-    def footnote_ref(name):
+    def footnote_ref(name: str) -> str:
         """
+        Returns footnote reference.
 
         :param name: the text to write into this element
-        :return:
+        :return: footnote reference
         """
         return "[#{0}]".format(name)
 
-    def replacement(self, name, value, indent=0):
+    def replacement(self, name: str, value: str, indent: int = 0) -> None:
         """
+        Constructs replacement directive.
 
         :param name: the name of the replacement
-        :param value: the value fo the replacement
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        :param value: the value for the replacement
+        :param indent: indentation depth
         """
 
         output = ".. |{0}| replace:: {1}".format(name, value)
@@ -399,12 +405,12 @@ class RstCloth:
             )
             self._add(result)
 
-    def ref_target(self, name, indent=0):
+    def ref_target(self, name: str, indent: int = 0) -> None:
         """
+        Constructs hyperlink reference target.
 
         :param name: the name of the reference target
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        :param indent: indentation depth
         """
         o = ".. _{0}:".format(name)
         self._add(_indent(o, indent))
