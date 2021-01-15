@@ -560,6 +560,75 @@ class TestTable(unittest.TestCase):
         r.table_list(headers, data)
         self.assertEqual(r.data, expected)
 
+    def test_table_list_auto_widths(self):
+        r = RstCloth(stream=io.StringIO())
+        headers = ['span', 'ham']
+        data = [
+            ['1', '2'],
+            ['3', '4']
+        ]
+        expected = \
+            '.. list-table::\n' \
+            '   :header-rows: 1\n' \
+            '   :widths: auto\n' \
+            '\n' \
+            '   * - span\n' \
+            '     - ham\n' \
+            '   * - 1\n' \
+            '     - 2\n' \
+            '   * - 3\n' \
+            '     - 4\n' \
+            '\n'
+
+        r.table_list(headers, data, widths='auto')
+        self.assertEqual(r.data, expected)
+
+    def test_table_list_integer_widths(self):
+        r = RstCloth(stream=io.StringIO())
+        headers = ['span', 'ham']
+        data = [
+            ['1', '2'],
+            ['3', '4']
+        ]
+        expected = \
+            '.. list-table::\n' \
+            '   :header-rows: 1\n' \
+            '   :widths: 40 60\n' \
+            '\n' \
+            '   * - span\n' \
+            '     - ham\n' \
+            '   * - 1\n' \
+            '     - 2\n' \
+            '   * - 3\n' \
+            '     - 4\n' \
+            '\n'
+
+        r.table_list(headers, data, widths=[40, 60])
+        self.assertEqual(r.data, expected)
+
+    def test_table_list_integer_width(self):
+        r = RstCloth(stream=io.StringIO())
+        headers = ['span', 'ham']
+        data = [
+            ['1', '2'],
+            ['3', '4']
+        ]
+        expected = \
+            '.. list-table::\n' \
+            '   :header-rows: 1\n' \
+            '   :width: 80%\n' \
+            '\n' \
+            '   * - span\n' \
+            '     - ham\n' \
+            '   * - 1\n' \
+            '     - 2\n' \
+            '   * - 3\n' \
+            '     - 4\n' \
+            '\n'
+
+        r.table_list(headers, data, width='80%')
+        self.assertEqual(r.data, expected)
+
 
 if __name__ == "__main__":
     unittest.main()

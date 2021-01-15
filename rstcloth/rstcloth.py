@@ -12,6 +12,8 @@ from rstcloth.utils import first_whitespace_position
 t_content = typing.Union[str, typing.List[str]]
 t_fields = typing.Iterable[typing.Tuple[str, str]]
 t_optional_2d_array = typing.Optional[typing.List[typing.List]]
+t_width = typing.Union[int, str]
+t_widths = typing.Union[typing.List[int], str]
 
 
 def _indent(content: t_content, indent: int) -> str:
@@ -129,14 +131,32 @@ class RstCloth:
         )
         self._add("\n" + _indent(t, indent) + "\n")
 
-    def table_list(self, headers, data, widths=None, indent=0):
+    def table_list(self, headers: typing.Iterable, data: t_optional_2d_array,
+                   widths: t_widths = None, width: t_width = None,
+                   indent: int = 0) -> None:
+        """
+        Constructs list table.
+
+        :param headers: a list of header values (strings), to use for the table
+        :param data: a list of lists of row data (same length as the header
+            list each)
+        :param widths: list of relative column widths or the special
+            value "auto"
+        :param width: forces the width of the table to the specified
+            length or percentage of the line width
+        :param indent: indentation depth
+        """
         _fields = []
         rows = []
         if headers:
             _fields.append(("header-rows", "1"))
             rows.extend([headers])
         if widths is not None:
-            _fields.append(("widths", " ".join(widths)))
+            if not isinstance(widths, str):
+                widths = ' '.join(map(str, widths))
+            _fields.append(("widths", widths))
+        if width is not None:
+            _fields.append(("width", str(width)))
 
         self.directive("list-table", fields=_fields, indent=indent)
         self.newline()
