@@ -452,6 +452,18 @@ class RstCloth:
     h6 = functools.partialmethod(heading, char=';')
     title = functools.partialmethod(heading, char='=', overline=True)
 
+    # admonitions
+    admonition = functools.partialmethod(directive, name='admonition')
+    attention = functools.partialmethod(directive, name='attention')
+    caution = functools.partialmethod(directive, name='caution')
+    danger = functools.partialmethod(directive, name='danger')
+    error = functools.partialmethod(directive, name='error')
+    hint = functools.partialmethod(directive, name='hint')
+    important = functools.partialmethod(directive, name='important')
+    note = functools.partialmethod(directive, name='note')
+    tip = functools.partialmethod(directive, name='tip')
+    warning = functools.partialmethod(directive, name='warning')
+
 
 class Table(object):
     def __init__(self, header, data=None):

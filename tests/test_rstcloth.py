@@ -464,6 +464,16 @@ class TestRstCloth(BaseTestCase):
         self.r.ref_target("foo-are-magic-ref3", 3)
         self.assertEqual(self.r.data, "   .. _foo-are-magic-ref3:\n")
 
+    def test_warning_box(self):
+        self.r.warning(
+            arg=None,
+            content='Danger!'
+        )
+        expected = '.. warning::\n' \
+                   '\n' \
+                   '   Danger!\n'
+        self.assertEqual(self.r.data, expected)
+
 
 class TestTable(unittest.TestCase):
     """Testing operation of the Rst generator"""
