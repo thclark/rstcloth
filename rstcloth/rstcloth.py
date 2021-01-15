@@ -1,14 +1,10 @@
 import functools
-import io
 import sys
 import textwrap
 import typing
 from tabulate import tabulate
 
 from rstcloth.utils import first_whitespace_position
-
-
-# TODO REVIEW THIS ENTIRE FILE - ADDED BY A THIRD PARTY CONTRIBUTOR BUT FOR SOME REASON IT REDEFINES RSTCLOTH
 
 t_content = typing.Union[str, typing.List[str]]
 t_fields = typing.Iterable[typing.Tuple[str, str]]
@@ -540,85 +536,3 @@ class RstCloth:
         Constructs transition marker.
         """
         self._add('---------')
-
-
-class Table(object):
-    def __init__(self, header, data=None):
-        """
-
-        :param header: a list of header values
-        :param data: optional, a list of lists of data to add as rows.
-        :return:
-        """
-
-        self.num_columns = len(header)
-        self.num_rows = 0
-        self.header = header
-        self.rows = []
-        if data is not None:
-            for row in data:
-                self.append(row)
-
-    def append(self, row):
-        """
-
-        :param row: a single row to add (list)
-        :return:
-        """
-        row = [str(x) for x in row]
-
-        if len(row) != self.num_columns:
-            raise ValueError("row length mismatch")
-
-        self.num_rows += 1
-        self.rows.append(row)
-
-        return self
-
-    def _max_col_with(self, idx):
-        """
-
-        :param idx: the index to return max width of
-        :return:
-        """
-        return max([len(self.header[idx])] + [len(x[idx]) for x in self.rows])
-
-    def render(self, padding=3):
-        """
-
-        :return:
-        """
-        widths = [self._max_col_with(x) + padding for x in range(self.num_columns)]
-        f = io.StringIO()
-
-        # first right out the header
-        f.write("+")
-        for width in widths:
-            f.write("-" * width + "+")
-        f.write("\n")
-
-        f.write("|")
-        for col, width in zip(self.header, widths):
-            f.write(col + " " * (width - len(col)) + "|")
-        f.write("\n")
-
-        f.write("+")
-        for width in widths:
-            f.write("=" * width + "+")
-        f.write("\n")
-
-        # then the rows:
-        for ridx in range(self.num_rows):
-            f.write("|")
-            for col, width in zip(self.rows[ridx], widths):
-                f.write(col + " " * (width - len(col)) + "|")
-            f.write("\n")
-
-            f.write("+")
-            for width in widths:
-                f.write("-" * width + "+")
-            f.write("\n")
-
-        f.seek(0)
-
-        return f.read()
