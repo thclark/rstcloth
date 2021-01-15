@@ -1,3 +1,4 @@
+import functools
 import io
 import sys
 import textwrap
@@ -423,80 +424,30 @@ class RstCloth:
             content = ' '.join(content)
         self._add(self.fill(content, indent, indent))
 
-    def title(self, text, char="=", indent=0):
+    def heading(self, text: str, char: str, overline: bool = False,
+                indent: int = 0) -> None:
         """
-
-        :param text: the text to write into this element
-        :param char: (optional, default='=') the character to underline the title with
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
-        """
-        line = char * len(text)
-        self._add(_indent([line, text, line], indent))
-
-    def heading(self, text, char, indent=0):
-        """
+        Constructs section title.
 
         :param text: the text to write into this element
         :param char: the character to line the heading with
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        :param overline: should overline be included
+        :param indent: indentation depth
+        :return: section title
         """
-        self._add(_indent([text, char * len(text)], indent))
+        underline = char * len(text)
+        content = [text, underline]
+        if overline:
+            content.insert(0, underline)
+        self._add(_indent(content, indent))
 
-    def h1(self, text, indent=0):
-        """
-
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
-        """
-        self.heading(text, char="=", indent=indent)
-
-    def h2(self, text, indent=0):
-        """
-
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
-        """
-        self.heading(text, char="-", indent=indent)
-
-    def h3(self, text, indent=0):
-        """
-
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
-        """
-        self.heading(text, char="~", indent=indent)
-
-    def h4(self, text, indent=0):
-        """
-
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
-        """
-        self.heading(text, char="+", indent=indent)
-
-    def h5(self, text, indent=0):
-        """
-
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
-        """
-        self.heading(text, char="^", indent=indent)
-
-    def h6(self, text, indent=0):
-        """
-
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
-        """
-        self.heading(text, char=";", indent=indent)
+    h1 = functools.partialmethod(heading, char='=')
+    h2 = functools.partialmethod(heading, char='-')
+    h3 = functools.partialmethod(heading, char='~')
+    h4 = functools.partialmethod(heading, char='+')
+    h5 = functools.partialmethod(heading, char='^')
+    h6 = functools.partialmethod(heading, char=';')
+    title = functools.partialmethod(heading, char='=', overline=True)
 
 
 class Table(object):
