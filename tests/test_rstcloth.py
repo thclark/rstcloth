@@ -397,7 +397,7 @@ class TestRstCloth(BaseTestCase):
             "     " + " the" * 5 + "\n"
         )
 
-    def test_field_very_long_with_body(self):
+    def test_field_very_long_with_value(self):
         given = "my very long field with spam spam spam spam spam ham bacon " \
                 "and eggs"
         expected = "   :{given}:\n      spam\n".format(given=given)

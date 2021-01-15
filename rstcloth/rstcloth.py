@@ -143,19 +143,19 @@ class RstCloth:
             length or percentage of the line width
         :param indent: indentation depth
         """
-        _fields = []
+        fields = []
         rows = []
         if headers:
-            _fields.append(("header-rows", "1"))
+            fields.append(("header-rows", "1"))
             rows.extend([headers])
         if widths is not None:
             if not isinstance(widths, str):
                 widths = ' '.join(map(str, widths))
-            _fields.append(("widths", widths))
+            fields.append(("widths", widths))
         if width is not None:
-            _fields.append(("width", str(width)))
+            fields.append(("width", str(width)))
 
-        self.directive("list-table", fields=_fields, indent=indent)
+        self.directive("list-table", fields=fields, indent=indent)
         self.newline()
 
         if data:
@@ -395,9 +395,9 @@ class RstCloth:
             self._add(_indent(marker, indent))
             self.content(value, indent=indent + 3)
         else:
-            marker = ":{name}: {body}".format(
+            marker = ":{name}: {value}".format(
                 name=name,
-                body=value
+                value=value
             )
             result = self.fill(
                 marker,
