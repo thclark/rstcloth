@@ -2,6 +2,7 @@ import functools
 import sys
 import textwrap
 import typing
+
 from tabulate import tabulate
 
 from rstcloth.utils import first_whitespace_position
@@ -54,7 +55,7 @@ class RstCloth:
              subsequent_indent: int = 0) -> str:
         """
         Breaks text parameter into separate lines. Each line is indented
-        accordingly to *_indent parameters.
+        accordingly to initial_indent and subsequent_indent parameters.
 
         :param text: input string to be wrapped and indented
         :param initial_indent: first line indentation size
@@ -478,6 +479,8 @@ class RstCloth:
     def page_break(self, template: str = None) -> None:
         """
         Constructs page break.
+
+        :param template: name of the next page template
         """
         if template is None:
             content = 'PageBreak'
@@ -488,6 +491,8 @@ class RstCloth:
     def frame_break(self, heights: int) -> None:
         """
         Constructs frame break.
+
+        :param heights: height in points
         """
         self.directive(
             name='raw',
@@ -498,6 +503,9 @@ class RstCloth:
     def spacer(self, horizontal: int, vertical: int) -> None:
         """
         Constructs a spacer.
+
+        :param horizontal: horizontal size in points
+        :param vertical: vertical size in points
         """
         self.directive(
             name='raw',
