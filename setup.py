@@ -1,12 +1,14 @@
 from setuptools import find_packages, setup
 
+"""
+Note:
+  The Hitchiker's guide to python provides an excellent, standard,
+  method for creating python packages:
+      http://docs.python-guide.org/en/latest/writing/structure/
 
-# Note:
-#   The Hitchiker's guide to python provides an excellent, standard, method for creating python packages:
-#       http://docs.python-guide.org/en/latest/writing/structure/
-#
-#   To deploy on PYPI follow the instructions at the bottom of:
-#       https://packaging.python.org/tutorials/distributing-packages/#uploading-your-project-to-pypi
+  To deploy on PYPI follow the instructions at the bottom of:
+      https://packaging.python.org/tutorials/distributing-packages/#uploading-your-project-to-pypi
+"""
 
 with open("README.md") as f:
     readme_text = f.read()
@@ -44,5 +46,6 @@ setup(
         "Topic :: Utilities",
     ],
     python_requires=">=3.6",
-    keywords=["sphinx", "rst", "restructuredtext", "documentation", "rest", "docutils"],
+    keywords=["sphinx", "rst", "restructuredtext",
+              "documentation", "rest", "docutils"],
 )

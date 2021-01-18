@@ -97,7 +97,8 @@ class TestRstCloth(unittest.TestCase):
                                       "      :c: d\n")
 
     def test_directive_fields_multiple_arg_indent(self):
-        self.r.directive("test", arg="new", indent=3, fields=[("a", "b"), ("c", "d")])
+        self.r.directive("test", arg="new", indent=3,
+                         fields=[("a", "b"), ("c", "d")])
         self.assertEqual(self.r.data, "   .. test:: new\n"
                                       "      :a: b\n"
                                       "      :c: d\n")
@@ -227,7 +228,8 @@ class TestRstCloth(unittest.TestCase):
         self.r.footnote("footsnotes", "the " * 40)
         self.assertEqual(
             self.r.data,
-            ".. [#footsnotes]" + " the" * 14 + "\n  " + " the" * 17 + "\n  " + " the" * 9 + "\n"
+            ".. [#footsnotes]" + " the" * 14 + "\n  "
+            + " the" * 17 + "\n  " + " the" * 9 + "\n"
         )
 
     def test_definition(self):
@@ -303,7 +305,8 @@ class TestRstCloth(unittest.TestCase):
 
     def test_replacement_with_indent(self):
         self.r.replacement("foo", "replace-with-bar", indent=3)
-        self.assertEqual(self.r.data, "   .. |foo| replace:: replace-with-bar\n")
+        self.assertEqual(self.r.data,
+                         "   .. |foo| replace:: replace-with-bar\n")
 
     def test_li_simple(self):
         self.r.li("foo")
