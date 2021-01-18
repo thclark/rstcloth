@@ -25,7 +25,7 @@ setup(
     long_description=readme_text,
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests", "docs")),
-    install_requires=["sphinx>=2,<4", "pygments", "tabulate"],
+    install_requires=["tabulate"],
     include_package_data=True,
     classifiers=[
         "Development Status :: 4 - Beta",
