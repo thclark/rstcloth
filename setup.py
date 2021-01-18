@@ -25,7 +25,7 @@ setup(
     long_description=readme_text,
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests", "docs")),
-    install_requires=["sphinx>=2,<4", "pygments", "PyYAML", "tabulate"],
+    install_requires=["sphinx>=2,<4", "pygments", "tabulate"],
     include_package_data=True,
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -43,7 +43,6 @@ setup(
         "Topic :: Text Processing",
         "Topic :: Utilities",
     ],
-    entry_points={"console_scripts": ["rstable = rstcloth.table:main"]},
     python_requires=">=3.6",
     keywords=["sphinx", "rst", "restructuredtext", "documentation", "rest", "docutils"],
 )
