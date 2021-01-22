@@ -213,6 +213,7 @@ class RstCloth:
             self.newline()
             for line in content:
                 self.content(line, indent=indent + 3)
+            self.newline()
 
     @classmethod
     def role(cls, name: t_content, value: str, text: str = None) -> str:
@@ -543,4 +544,4 @@ class RstCloth:
         """
         Constructs transition marker.
         """
-        self._add('---------')
+        self._add('\n---------\n')

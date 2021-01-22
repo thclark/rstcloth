@@ -59,14 +59,16 @@ class TestRstCloth(unittest.TestCase):
         self.r.directive("test", content="string")
         self.assertEqual(self.r.data, ".. test::\n"
                                       "\n"
-                                      "   string\n")
+                                      "   string\n"
+                                      "\n")
 
     def test_directive_with_multiline_content(self):
         self.r.directive("test", content=["string", "second"])
         self.assertEqual(self.r.data, ".. test::\n"
                                       "\n"
                                       "   string\n"
-                                      "   second\n")
+                                      "   second\n"
+                                      "\n")
 
     def test_directive_simple_indent(self):
         self.r.directive("test", indent=3)
@@ -107,14 +109,16 @@ class TestRstCloth(unittest.TestCase):
         self.r.directive("test", content="string", indent=3)
         self.assertEqual(self.r.data, "   .. test::\n"
                                       "\n"
-                                      "      string\n")
+                                      "      string\n"
+                                      "\n")
 
     def test_directive_with_multiline_content_indent(self):
         self.r.directive("test", indent=3, content=["string", "second"])
         self.assertEqual(self.r.data, "   .. test::\n"
                                       "\n"
                                       "      string\n"
-                                      "      second\n")
+                                      "      second\n"
+                                      "\n")
 
     def test_directive_with_long_argument_indent(self):
         argument = ' '.join(["spam"] * 20)
@@ -142,6 +146,7 @@ class TestRstCloth(unittest.TestCase):
             "\n"
             "      " + " ".join(["test"] * 13) + "\n"
             "      " + " ".join(["test"] * 7) + "\n"
+            "\n"
         )
         self.r.directive("test", indent=3, content=content)
         self.assertEqual(self.r.data, expected)
@@ -473,7 +478,8 @@ class TestRstCloth(unittest.TestCase):
         )
         expected = '.. warning::\n' \
                    '\n' \
-                   '   Danger!\n'
+                   '   Danger!\n' \
+                   '\n'
         self.assertEqual(self.r.data, expected)
 
     def test_version(self):
@@ -487,28 +493,32 @@ class TestRstCloth(unittest.TestCase):
         self.r.page_break()
         expected = '.. raw:: pdf\n' \
                    '\n' \
-                   '   PageBreak\n'
+                   '   PageBreak\n' \
+                   '\n'
         self.assertEqual(self.r.data, expected)
 
     def test_page_break_template(self):
         self.r.page_break(template='spam')
         expected = '.. raw:: pdf\n' \
                    '\n' \
-                   '   PageBreak spam\n'
+                   '   PageBreak spam\n' \
+                   '\n'
         self.assertEqual(self.r.data, expected)
 
     def test_frame_break(self):
         self.r.frame_break(heights=100)
         expected = '.. raw:: pdf\n' \
                    '\n' \
-                   '   FrameBreak 100\n'
+                   '   FrameBreak 100\n' \
+                   '\n'
         self.assertEqual(self.r.data, expected)
 
     def test_spacer(self):
         self.r.spacer(horizontal=0, vertical=30)
         expected = '.. raw:: pdf\n' \
                    '\n' \
-                   '   Spacer 0 30\n'
+                   '   Spacer 0 30\n' \
+                   '\n'
         self.assertEqual(self.r.data, expected)
 
     def test_table_of_contents(self):
@@ -529,7 +539,7 @@ class TestRstCloth(unittest.TestCase):
 
     def test_transition_marker(self):
         self.r.transition_marker()
-        expected = '---------\n'
+        expected = '\n---------\n\n'
         self.assertEqual(self.r.data, expected)
 
 
