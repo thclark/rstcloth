@@ -4,6 +4,11 @@ source =
 
 [run]
 omit =
+    dist/*
+    docs/*
     env/*
     tests/*
     */tests/*
+    .devcontainer/*
+    .github/*
+    .vscode/*
