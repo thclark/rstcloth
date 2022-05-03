@@ -1,5 +1,5 @@
 ![cd](https://github.com/thclark/rstcloth/actions/workflows/cd.yml/badge.svg)
-[![codecov](https://codecov.io/gh/thclark/rstcloth/branch/master/graph/badge.svg)](https://codecov.io/gh/thclark/rstcloth)
+[![codecov](https://codecov.io/gh/thclark/rstcloth/branch/main/graph/badge.svg)](https://codecov.io/gh/thclark/rstcloth)
 [![PyPI version](https://badge.fury.io/py/rstcloth.svg)](https://badge.fury.io/py/rstcloth)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
