@@ -1,161 +1,210 @@
-import io
-import logging
+import functools
+import sys
 import textwrap
+import typing
 
-from rstcloth.cloth import Cloth
+from tabulate import tabulate
+
+from rstcloth.utils import first_whitespace_position
+
+t_content = typing.Union[str, typing.List[str]]
+t_fields = typing.Iterable[typing.Tuple[str, str]]
+t_optional_2d_array = typing.Optional[typing.List[typing.List]]
+t_width = typing.Union[int, str]
+t_widths = typing.Union[typing.List[int], str]
 
 
-logger = logging.getLogger("rstcloth")
-
-# TODO REVIEW THIS ENTIRE FILE - ADDED BY A THIRD PARTY CONTRIBUTOR BUT FOR SOME REASON IT REDEFINES RSTCLOTH
-
-
-def fill(string, first=0, hanging=0, wrap=True, width=72):
+def _indent(content: t_content, indent: int) -> str:
     """
+    Prepends each nonempty line in content parameter with spaces.
 
-    :param string:
-    :param first:
-    :param hanging:
-    :param wrap:
-    :param width:
-    :return:
-    """
-    first_indent = " " * first
-    hanging_indent = " " * hanging
-
-    if wrap is True:
-        return textwrap.fill(
-            string,
-            width=width,
-            break_on_hyphens=False,
-            break_long_words=False,
-            initial_indent=first_indent,
-            subsequent_indent=hanging_indent,
-        )
-    else:
-        content = string.split("\n")
-        if first == hanging:
-            return "\n".join([first_indent + line for line in content])
-        elif first > hanging:
-            indent_diff = first - hanging
-            o = indent_diff * " "
-            o += "\n".join([hanging_indent + line for line in content])
-            return o
-        elif first < hanging:
-            indent_diff = hanging - first
-            o = "\n".join([hanging_indent + line for line in content])
-            return o[indent_diff:]
-
-
-def _indent(content, indent):
-    """
-
-    :param content:
-    :param indent:
-    :return:
+    :param content: text to be indented
+    :param indent: number of spaces to indent this element
+    :return: modified content where each nonempty line is indented
     """
     if indent == 0:
         return content
-    else:
-        indent = " " * indent
-        if isinstance(content, list):
-            return ["".join([indent, line]) for line in content]
-        else:
-            return "".join([indent, content])
+    indent = " " * indent
+    if isinstance(content, str):
+        content = content.splitlines()
+    return "\n".join([indent + line if line else line for line in content])
 
 
-class RstCloth(Cloth):
+class RstCloth:
     """
-    RstCloth is the base object to create a ReStructuredText document programatically.
+    RstCloth is the base class to create a ReStructuredText document
+    programmatically.
 
-    :param line_width: (optional, default=72), the line width to use if wrap is set to true in an individual action.
-    :return:
+    :param stream: output stream for writing ReStructuredText content
+    :param line_width: Maximum length of each ReStructuredText content line.
+        In some edge cases this limit might be crossed.
     """
 
-    def __init__(self, line_width=72):
+    def __init__(self, stream: typing.TextIO = sys.stdout, line_width: int = 72) -> None:
+        self._stream = stream
         self._line_width = line_width
-        self._data = []
 
-    def _add(self, content):
+    def fill(self, text: str, initial_indent: int = 0, subsequent_indent: int = 0) -> str:
         """
+        Breaks text parameter into separate lines. Each line is indented
+        accordingly to initial_indent and subsequent_indent parameters.
+
+        :param text: input string to be wrapped and indented
+        :param initial_indent: first line indentation size
+        :param subsequent_indent: subsequent lines indentation size
+        :return: wrapped and indented text
+        """
+        return textwrap.fill(
+            text=text,
+            width=self._line_width,
+            initial_indent=" " * initial_indent,
+            subsequent_indent=" " * subsequent_indent,
+            expand_tabs=False,
+            break_long_words=False,
+            break_on_hyphens=False,
+        )
+
+    def _add(self, content: t_content) -> None:
+        """
+        Places content into output stream.
 
         :param content: the text to write into this element
-        :return:
         """
 
         if isinstance(content, list):
-            self._data.extend(content)
+            self._stream.write("\n".join(content) + "\n")
         else:
-            self._data.append(content)
+            self._stream.write(content + "\n")
 
-    def newline(self, count=1):
+    @property
+    def data(self) -> str:
         """
+        Returns ReStructuredText document content as a string.
 
-        :param count: (optional default=1) the number of newlines to add
-        :return:
+        :return: the content of output stream
         """
+        self._stream.seek(0)
+        return self._stream.read()
 
-        if isinstance(count, int):
-            if count == 1:
-                self._add("")
-            else:
-                # subtract one because every item gets one \n for free.
-                self._add("\n" * (count - 1))
+    def newline(self, count: int = 1) -> None:
+        """
+        Places a newline(s) into ReStructuredText document.
+
+        :param count: the number of newlines to add
+        """
+        if count == 1:
+            self._add("")
         else:
-            raise Exception("Count of newlines must be a positive int.")
+            # subtract one because every item gets one \n for free.
+            self._add("\n" * (count - 1))
 
-    def table(self, header, data, indent=0):
+    def table(self, header: typing.List, data: t_optional_2d_array, indent=0) -> None:
         """
+        Constructs grid table.
 
         :param header: a list of header values (strings), to use for the table
-        :param data: a list of lists of row data (same length as the header list each)
-        :param indent: something!
-        :return:
+        :param data: a list of lists of row data (same length as the header
+            list each)
+        :param indent: number of spaces to indent this element
         """
 
-        t = Table(header, data=data)
-        self._add(_indent("\n" + t.render(), indent))
+        t = tabulate(tabular_data=data, headers=header, tablefmt="grid", disable_numparse=True)
+        self._add("\n" + _indent(t, indent) + "\n")
 
-    def directive(self, name, arg=None, fields=None, content=None, indent=0, wrap=True):
+    def table_list(
+        self,
+        headers: typing.Iterable,
+        data: t_optional_2d_array,
+        widths: t_widths = None,
+        width: t_width = None,
+        indent: int = 0,
+    ) -> None:
         """
+        Constructs list table.
+
+        :param headers: a list of header values (strings), to use for the table
+        :param data: a list of lists of row data (same length as the header
+            list each)
+        :param widths: list of relative column widths or the special
+            value "auto"
+        :param width: forces the width of the table to the specified
+            length or percentage of the line width
+        :param indent: number of spaces to indent this element
+        """
+        fields = []
+        rows = []
+        if headers:
+            fields.append(("header-rows", "1"))
+            rows.extend([headers])
+        if widths is not None:
+            if not isinstance(widths, str):
+                widths = " ".join(map(str, widths))
+            fields.append(("widths", widths))
+        if width is not None:
+            fields.append(("width", str(width)))
+
+        self.directive("list-table", fields=fields, indent=indent)
+        self.newline()
+
+        if data:
+            rows.extend(data)
+        for row in rows:
+            self.li(row[0], bullet="* -", indent=indent + 3)
+            for cell in row[1:]:
+                self.li(cell, bullet="  -", indent=indent + 3)
+        self.newline()
+
+    def directive(
+        self, name: str, arg: str = None, fields: t_fields = None, content: t_content = None, indent: int = 0
+    ) -> None:
+        """
+        Constructs reStructuredText directive.
 
         :param name: the directive itself to use
         :param arg: the argument to pass into the directive
         :param fields: fields to append as children underneath the directive
         :param content: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
+        :param indent: number of spaces to indent this element
         """
-        logger.debug("Ignoring wrap parameter, presumably for api consistency. wrap=%s", wrap)
-        o = list()
-        o.append(".. {0}::".format(name))
-
-        if arg is not None:
-            o[0] += " " + arg
+        if arg is None:
+            marker = ".. {type}::".format(type=name)
+            self._add(_indent(marker, indent))
+        else:
+            first_whitespace = first_whitespace_position(arg)
+            # If directive itself is too long to be fitted in a line or
+            # directive with an argument can't be wrapped without breaking
+            # the directive in half then it is better to exceed the line width
+            # limitation.
+            if len(name) + first_whitespace + indent + 6 > self._line_width:
+                marker = ".. {type}::".format(type=name)
+                self._add(_indent(marker, indent))
+                self.content(arg, indent=indent + 3)
+            else:
+                marker = ".. {type}:: {argument}".format(type=name, argument=arg)
+                result = self.fill(marker, initial_indent=indent, subsequent_indent=indent + 3)
+                self._add(result)
 
         if fields is not None:
             for k, v in fields:
-                o.append(_indent(":" + k + ": " + str(v), 3))
+                self.field(name=k, value=v, indent=indent + 3)
 
         if content is not None:
-            o.append("")
+            if isinstance(content, str):
+                content = [content]
+            self.newline()
+            for line in content:
+                self.content(line, indent=indent + 3)
+            self.newline()
 
-            if isinstance(content, list):
-                o.extend(_indent(content, 3))
-            else:
-                o.append(_indent(content, 3))
-
-        self._add(_indent(o, indent))
-
-    @staticmethod
-    def role(name, value, text=None):
+    @classmethod
+    def role(cls, name: t_content, value: str, text: str = None) -> str:
         """
+        Returns role with optional hyperlink.
 
         :param name: the name of the role
         :param value: the value of the role
-        :param text: (optional, default=None) text after the role
-        :return:
+        :param text: text after the role
+        :return: role element
         """
 
         if isinstance(name, list):
@@ -164,137 +213,121 @@ class RstCloth(Cloth):
         if text is None:
             return ":{0}:`{1}`".format(name, value)
         else:
-            return ":{0}:`{2} <{1}>`".format(name, value, text)
+            link = cls.inline_link(text=text, link=value)
+            return ":{0}:{1}".format(name, link)
 
     @staticmethod
-    def bold(string):
+    def bold(string: str) -> str:
         """
+        Returns strongly emphasised (boldface) text.
 
         :param string: the text to write into this element
-        :return:
+        :return: bolded text
         """
         return "**{0}**".format(string)
 
     @staticmethod
-    def emph(string):
+    def emph(string: str) -> str:
         """
+        Returns emphasised (italics) text.
 
         :param string: the text to write into this element
-        :return:
+        :return: emphasised text
         """
         return "*{0}*".format(string)
 
     @staticmethod
-    def pre(string):
+    def pre(string: str) -> str:
         """
+        Returns inline literals.
 
         :param string: the text to write into this element
-        :return:
+        :return: inline literals
         """
         return "``{0}``".format(string)
 
     @staticmethod
-    def inline_link(text, link):
+    def inline_link(text: str, link: str) -> str:
         """
+        Returns hyperlink reference.
 
         :param text: the printed value of the link
         :param link: the url the link should goto
-        :return:
+        :return: hyperlink reference
         """
         return "`{0} <{1}>`_".format(text, link)
 
     @staticmethod
-    def footnote_ref(name):
+    def footnote_ref(name: str) -> str:
         """
+        Returns footnote reference.
 
         :param name: the text to write into this element
-        :return:
+        :return: footnote reference
         """
-        return "[#{0}]".format(name)
+        return "[#{0}]_".format(name)
 
-    def _paragraph(self, content, wrap=True):
+    def replacement(self, name: str, value: str, indent: int = 0) -> None:
         """
-
-        :param content: the text to write into this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
-        """
-        return [i.rstrip() for i in fill(content, wrap=wrap, width=self._line_width).split("\n")]
-
-    def replacement(self, name, value, indent=0):
-        """
+        Constructs replacement directive.
 
         :param name: the name of the replacement
-        :param value: the value fo the replacement
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        :param value: the value for the replacement
+        :param indent: number of spaces to indent this element
         """
 
         output = ".. |{0}| replace:: {1}".format(name, value)
         self._add(_indent(output, indent))
 
-    def codeblock(self, content, indent=0, wrap=True, language=None):
+    def codeblock(self, content: t_content, indent: int = 0, language: str = None) -> None:
         """
+        Constructs literal block.
 
         :param content: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :param language:
-        :return:
+        :param indent: number of spaces to indent this element
+        :param language: formal language indication for syntax
+            highlighter
+        :return: literal block
         """
         if language is None:
-            o = ["::", _indent(content, 3)]
-            self._add(_indent(o, indent))
+            self._add(self.fill("::", initial_indent=indent))
         else:
-            self.directive(name="code-block", arg=language, content=content, indent=indent)
+            self.directive(name="code-block", arg=language, indent=indent)
+            self.newline()
+        self._add(_indent(content, indent + 3))
 
-    def footnote(self, ref, text, indent=0, wrap=True):
+    def footnote(self, ref: str, text: str, indent: int = 0) -> None:
         """
+        Constructs footnote directive.
 
         :param ref: the reference value
         :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
+        :param indent: number of spaces to indent this element
         """
-        self._add(
-            fill(
-                ".. [#{0}] {1}".format(ref, text),
-                indent,
-                indent + 3,
-                wrap,
-                width=self._line_width,
-            )
-        )
+        self._add(self.fill(".. [#{0}] {1}".format(ref, text), indent, indent + 3))
 
-    def definition(self, name, text, indent=0, wrap=True, bold=False):
+    def definition(self, name: str, text: str, indent: int = 0, bold: bool = False) -> None:
         """
+        Constructs definition list item.
 
         :param name: the name of the definition
         :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :param bold:
-        :return:
+        :param indent: number of spaces to indent this element
+        :param bold: should definition name be bolded
         """
-        o = []
-
         if bold is True:
             name = self.bold(name)
 
-        o.append(_indent(name, indent))
-        o.append(fill(text, indent + 3, indent + 3, wrap=wrap, width=self._line_width))
+        self._add(self.fill(name, indent, indent))
+        self._add(self.fill(text, indent + 3, indent + 3))
 
-        self._add(o)
-
-    def li(self, content, bullet="-", indent=0, wrap=True):
+    def li(self, content: t_content, bullet: str = "-", indent: int = 0) -> None:
         """
+        Constructs bullet list item.
 
         :param content: the text to write into this element
-        :param bullet: (optional, default='-') the character of the bullet
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
+        :param bullet: the character of the bullet
+        :param indent: number of spaces to indent this element
         """
 
         bullet += " "
@@ -302,228 +335,153 @@ class RstCloth(Cloth):
 
         if isinstance(content, list):
             content = bullet + "\n".join(content)
-            self._add(
-                fill(
-                    content,
-                    indent,
-                    indent + hanging_indent_len,
-                    wrap,
-                    width=self._line_width,
-                )
-            )
+            self._add(self.fill(content, indent, indent + hanging_indent_len))
         else:
-            content = bullet + fill(content, 0, len(bullet), wrap, width=self._line_width)
-            self._add(fill(content, indent, indent, wrap, width=self._line_width))
+            self._add(self.fill(bullet + content, indent, hanging_indent_len))
 
-    def field(self, name, value, indent=0, wrap=True):
+    def field(self, name: str, value: str, indent: int = 0) -> None:
         """
+        Constructs a field.
 
         :param name: the name of the field
         :param value: the value of the field
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
+        :param indent: number of spaces to indent this element
         """
-        output = [":{0}:".format(name)]
-
-        if len(name) + len(value) < 60:
-            output[0] += " " + value
-            final = True
+        first_whitespace = first_whitespace_position(value)
+        if len(name) + first_whitespace + indent + 3 > self._line_width:
+            marker = ":{name}:".format(name=name)
+            self._add(_indent(marker, indent))
+            self.content(value, indent=indent + 3)
         else:
-            output.append("")
-            final = False
+            marker = ":{name}: {value}".format(name=name, value=value)
+            result = self.fill(marker, initial_indent=indent, subsequent_indent=indent + 3)
+            self._add(result)
 
-        if wrap is True and final is False:
-            content = fill(value, wrap=wrap, width=self._line_width).split("\n")
-            for line in content:
-                output.append(_indent(line, 3))
-
-        if wrap is False and final is False:
-            output.append(_indent(value, 3))
-
-        for line in output:
-            self._add(_indent(line, indent))
-
-    def ref_target(self, name, indent=0):
+    def ref_target(self, name: str, indent: int = 0) -> None:
         """
+        Constructs hyperlink reference target.
 
         :param name: the name of the reference target
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        :param indent: number of spaces to indent this element
         """
         o = ".. _{0}:".format(name)
         self._add(_indent(o, indent))
 
-    def content(self, content, indent=0, wrap=True):
+    def content(self, content: t_content, indent: int = 0) -> None:
         """
+        Constructs paragraph's content.
 
         :param content: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :param wrap: (optional, default=True) Whether or not to wrap lines to the line_width
-        :return:
+        :param indent: number of spaces to indent this element
         """
         if isinstance(content, list):
-            for line in content:
-                self._add(_indent(line, indent))
-        else:
-            lines = self._paragraph(content, wrap)
+            content = " ".join(content)
+        self._add(self.fill(content, indent, indent))
 
-            for line in lines:
-                self._add(_indent(line, indent))
-
-    def title(self, text, char="=", indent=0):
+    def heading(self, text: str, char: str, overline: bool = False, indent: int = 0) -> None:
         """
-
-        :param text: the text to write into this element
-        :param char: (optional, default='=') the character to underline the title with
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
-        """
-        line = char * len(text)
-        self._add(_indent([line, text, line], indent))
-
-    def heading(self, text, char, indent=0):
-        """
+        Constructs section title.
 
         :param text: the text to write into this element
         :param char: the character to line the heading with
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        :param overline: should overline be included
+        :param indent: number of spaces to indent this element
+        :return: section title
         """
-        self._add(_indent([text, char * len(text)], indent))
+        underline = char * len(text)
+        content = [text, underline]
+        if overline:
+            content.insert(0, underline)
+        self._add(_indent(content, indent))
 
-    def h1(self, text, indent=0):
+    h1 = functools.partialmethod(heading, char="=")
+    h2 = functools.partialmethod(heading, char="-")
+    h3 = functools.partialmethod(heading, char="~")
+    h4 = functools.partialmethod(heading, char="+")
+    h5 = functools.partialmethod(heading, char="^")
+    h6 = functools.partialmethod(heading, char=";")
+    title = functools.partialmethod(heading, char="=", overline=True)
+
+    # admonitions
+    admonition = functools.partialmethod(directive, name="admonition")
+    attention = functools.partialmethod(directive, name="attention")
+    caution = functools.partialmethod(directive, name="caution")
+    danger = functools.partialmethod(directive, name="danger")
+    error = functools.partialmethod(directive, name="error")
+    hint = functools.partialmethod(directive, name="hint")
+    important = functools.partialmethod(directive, name="important")
+    note = functools.partialmethod(directive, name="note")
+    tip = functools.partialmethod(directive, name="tip")
+    warning = functools.partialmethod(directive, name="warning")
+
+    # bibliographic fields
+    abstract = functools.partialmethod(field, name="Abstract")
+    address = functools.partialmethod(field, name="Address")
+    author = functools.partialmethod(field, name="Author")
+    authors = functools.partialmethod(field, name="Authors")
+    contact = functools.partialmethod(field, name="Contact")
+    copyright = functools.partialmethod(field, name="Copyright")
+    date = functools.partialmethod(field, name="Date")
+    dedication = functools.partialmethod(field, name="Dedication")
+    organization = functools.partialmethod(field, name="Organization")
+    revision = functools.partialmethod(field, name="Revision")
+    status = functools.partialmethod(field, name="Status")
+    version = functools.partialmethod(field, name="Version")
+
+    # raw directives
+    def page_break(self, template: str = None) -> None:
         """
+        Constructs page break.
 
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        :param template: name of the next page template
         """
-        self.heading(text, char="=", indent=indent)
+        if template is None:
+            content = "PageBreak"
+        else:
+            content = "PageBreak {template}".format(template=template)
+        self.directive(name="raw", arg="pdf", content=content)
 
-    def h2(self, text, indent=0):
+    def frame_break(self, heights: int) -> None:
         """
+        Constructs frame break.
 
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        :param heights: height in points
         """
-        self.heading(text, char="-", indent=indent)
+        self.directive(name="raw", arg="pdf", content="FrameBreak {0}".format(heights))
 
-    def h3(self, text, indent=0):
+    def spacer(self, horizontal: int, vertical: int) -> None:
         """
+        Constructs a spacer.
 
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        :param horizontal: horizontal size in points
+        :param vertical: vertical size in points
         """
-        self.heading(text, char="~", indent=indent)
+        self.directive(
+            name="raw",
+            arg="pdf",
+            content="Spacer {horizontal} {vertical}".format(horizontal=horizontal, vertical=vertical),
+        )
 
-    def h4(self, text, indent=0):
+    def table_of_contents(self, name: str = None, depth: int = None, backlinks: str = None) -> None:
         """
+        Constructs table of contents.
 
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        :param name: table of contents alternative title
+        :param depth: the number of section levels that are collected
+            in the table of contents
+        :param backlinks: generate links from section headers back to
+            the table of contents entries, the table of contents itself,
+            or generate no backlinks
         """
-        self.heading(text, char="+", indent=indent)
+        options = []
+        if depth:
+            options.append(("depth", str(depth)))
+        if backlinks in ["entry", "top", "none"]:
+            options.append(("backlinks", backlinks))
+        self.directive(name="contents", arg=name, fields=options)
 
-    def h5(self, text, indent=0):
+    def transition_marker(self) -> None:
         """
-
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
+        Constructs transition marker.
         """
-        self.heading(text, char="^", indent=indent)
-
-    def h6(self, text, indent=0):
-        """
-
-        :param text: the text to write into this element
-        :param indent: (optional default=0) number of characters to indent this element
-        :return:
-        """
-        self.heading(text, char=";", indent=indent)
-
-
-class Table(object):
-    def __init__(self, header, data=None):
-        """
-
-        :param header: a list of header values
-        :param data: optional, a list of lists of data to add as rows.
-        :return:
-        """
-
-        self.num_columns = len(header)
-        self.num_rows = 0
-        self.header = header
-        self.rows = []
-        if data is not None:
-            for row in data:
-                self.append(row)
-
-    def append(self, row):
-        """
-
-        :param row: a single row to add (list)
-        :return:
-        """
-        row = [str(x) for x in row]
-
-        if len(row) != self.num_columns:
-            raise ValueError("row length mismatch")
-
-        self.num_rows += 1
-        self.rows.append(row)
-
-        return self
-
-    def _max_col_with(self, idx):
-        """
-
-        :param idx: the index to return max width of
-        :return:
-        """
-        return max([len(self.header[idx])] + [len(x[idx]) for x in self.rows])
-
-    def render(self, padding=3):
-        """
-
-        :return:
-        """
-        widths = [self._max_col_with(x) + padding for x in range(self.num_columns)]
-        f = io.StringIO()
-
-        # first right out the header
-        f.write("+")
-        for width in widths:
-            f.write("-" * width + "+")
-        f.write("\n")
-
-        f.write("|")
-        for col, width in zip(self.header, widths):
-            f.write(col + " " * (width - len(col)) + "|")
-        f.write("\n")
-
-        f.write("+")
-        for width in widths:
-            f.write("=" * width + "+")
-        f.write("\n")
-
-        # then the rows:
-        for ridx in range(self.num_rows):
-            f.write("|")
-            for col, width in zip(self.rows[ridx], widths):
-                f.write(col + " " * (width - len(col)) + "|")
-            f.write("\n")
-
-            f.write("+")
-            for width in widths:
-                f.write("-" * width + "+")
-            f.write("\n")
-
-        f.seek(0)
-
-        return f.read()
+        self._add("\n---------\n")
