@@ -19,7 +19,7 @@ def _indent(content: t_content, indent: int) -> str:
     Prepends each nonempty line in content parameter with spaces.
 
     :param content: text to be indented
-    :param indent: indentation size
+    :param indent: number of spaces to indent this element
     :return: modified content where each nonempty line is indented
     """
     if indent == 0:
@@ -105,7 +105,7 @@ class RstCloth:
         :param header: a list of header values (strings), to use for the table
         :param data: a list of lists of row data (same length as the header
             list each)
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         """
 
         t = tabulate(tabular_data=data, headers=header, tablefmt="grid", disable_numparse=True)
@@ -129,7 +129,7 @@ class RstCloth:
             value "auto"
         :param width: forces the width of the table to the specified
             length or percentage of the line width
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         """
         fields = []
         rows = []
@@ -164,7 +164,7 @@ class RstCloth:
         :param arg: the argument to pass into the directive
         :param fields: fields to append as children underneath the directive
         :param content: the text to write into this element
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         """
         if arg is None:
             marker = ".. {type}::".format(type=name)
@@ -273,7 +273,7 @@ class RstCloth:
 
         :param name: the name of the replacement
         :param value: the value for the replacement
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         """
 
         output = ".. |{0}| replace:: {1}".format(name, value)
@@ -284,7 +284,7 @@ class RstCloth:
         Constructs literal block.
 
         :param content: the text to write into this element
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         :param language: formal language indication for syntax
             highlighter
         :return: literal block
@@ -302,7 +302,7 @@ class RstCloth:
 
         :param ref: the reference value
         :param text: the text to write into this element
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         """
         self._add(self.fill(".. [#{0}] {1}".format(ref, text), indent, indent + 3))
 
@@ -312,7 +312,7 @@ class RstCloth:
 
         :param name: the name of the definition
         :param text: the text to write into this element
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         :param bold: should definition name be bolded
         """
         if bold is True:
@@ -327,7 +327,7 @@ class RstCloth:
 
         :param content: the text to write into this element
         :param bullet: the character of the bullet
-        :param indent: (optional default=0) number of characters to indent this element
+        :param indent: number of spaces to indent this element
         """
 
         bullet += " "
@@ -345,7 +345,7 @@ class RstCloth:
 
         :param name: the name of the field
         :param value: the value of the field
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         """
         first_whitespace = first_whitespace_position(value)
         if len(name) + first_whitespace + indent + 3 > self._line_width:
@@ -362,7 +362,7 @@ class RstCloth:
         Constructs hyperlink reference target.
 
         :param name: the name of the reference target
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         """
         o = ".. _{0}:".format(name)
         self._add(_indent(o, indent))
@@ -372,7 +372,7 @@ class RstCloth:
         Constructs paragraph's content.
 
         :param content: the text to write into this element
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         """
         if isinstance(content, list):
             content = " ".join(content)
@@ -385,7 +385,7 @@ class RstCloth:
         :param text: the text to write into this element
         :param char: the character to line the heading with
         :param overline: should overline be included
-        :param indent: indentation depth
+        :param indent: number of spaces to indent this element
         :return: section title
         """
         underline = char * len(text)
