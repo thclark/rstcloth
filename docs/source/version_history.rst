@@ -13,7 +13,7 @@ Huge thankyou to Sam Kleiderman (@tychoish) who originated this package and main
 .. _version_0.0.x:
 
 Up To 0.2.6
-=====
+===========
 
 Versions up to 0.2.6 were maintained by @tychoish
 
