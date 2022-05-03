@@ -1,0 +1,75 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.187.0/containers/python-3
+{
+  "name": "Rstcloth Devcontainer",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  // Set *default* container specific settings.json values on container create.
+  "settings": {
+    "austin.mode": "Wall time",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "esbonio.server.enabled": true,
+    "esbonio.sphinx.confDir": "${workspaceFolder}/docs/source",
+    "jupyter.widgetScriptSources": ["jsdelivr.com", "unpkg.com"],
+    "prettier.prettierPath": "/usr/local/prettier",
+    "python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
+    "python.formatting.blackPath": "/usr/local/py-utils/bin/black",
+    "python.formatting.provider": "black",
+    "python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
+    "python.languageServer": "Pylance",
+    "python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
+    "python.linting.enabled": true,
+    "python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
+    "python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
+    "python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
+    "python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
+    // Line length to match black settings
+    // Disabling specific messages:
+    //  - To find the details do: /usr/local/py-utils/bin/pylint --list-msgs
+    //  - Disable missing-module-docstring (C0114) because we don't document modules routinely, just their members
+    //  - Disable invalid-name (C0103) because pylint thinks that eg 'x', 'df', 'np' are invalid due to their lengths
+    "python.linting.pylintArgs": [
+      "--max-line-length=120",
+      "--disable=missing-module-docstring,invalid-name"
+    ],
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
+    "python.pythonPath": "/usr/local/bin/python",
+    // Scrolling the editor is a nice idea but it doesn't work: always out of sync and impossible to manage
+    "restructuredtext.preview.scrollEditorWithPreview": false,
+    "restructuredtext.preview.scrollPreviewWithEditor": false,
+    "restructuredtext.linter.doc8.extraArgs": ["--max-line-length 180"],
+    "terminal.integrated.defaultProfile.linux": "zsh"
+  },
+
+  // Add the IDs of extensions you want installed when the container is created.
+  "extensions": [
+    "bungcip.better-toml",
+    "esbenp.prettier-vscode@2.2.1",
+    "irongeek.vscode-env",
+    "lextudio.restructuredtext",
+    "me-dutour-mathieu.vscode-github-actions",
+    "mikestead.dotenv",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-toolsai.jupyter",
+    "ms-toolsai.jupyter-renderers",
+    "ms-toolsai.jupyter-keymap",
+    "ms-vsliveshare.vsliveshare",
+    "p403n1x87.austin-vscode",
+    "ritwickdey.liveserver",
+    "trond-snekvik.simple-rst"
+  ],
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [80, 443, 5000, 7045, 7046, 7047, 7048, 7049, 8000, 8080],
+
+  // Poetry install *with* the root, which can't be cached in the docker layers (see dockerfile)
+  "postCreateCommand": "poetry install && pre-commit install && pre-commit install -t commit-msg",
+
+  // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+  "remoteUser": "vscode"
+}
