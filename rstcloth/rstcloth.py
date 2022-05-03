@@ -24,16 +24,10 @@ def _indent(content: t_content, indent: int) -> str:
     """
     if indent == 0:
         return content
-    indent = ' ' * indent
+    indent = " " * indent
     if isinstance(content, str):
         content = content.splitlines()
-    return '\n'.join(
-        [
-            indent + line
-            if line else line
-            for line in content
-        ]
-    )
+    return "\n".join([indent + line if line else line for line in content])
 
 
 class RstCloth:
@@ -46,13 +40,11 @@ class RstCloth:
         In some edge cases this limit might be crossed.
     """
 
-    def __init__(self, stream: typing.TextIO = sys.stdout,
-                 line_width: int = 72) -> None:
+    def __init__(self, stream: typing.TextIO = sys.stdout, line_width: int = 72) -> None:
         self._stream = stream
         self._line_width = line_width
 
-    def fill(self, text: str, initial_indent: int = 0,
-             subsequent_indent: int = 0) -> str:
+    def fill(self, text: str, initial_indent: int = 0, subsequent_indent: int = 0) -> str:
         """
         Breaks text parameter into separate lines. Each line is indented
         accordingly to initial_indent and subsequent_indent parameters.
@@ -65,11 +57,11 @@ class RstCloth:
         return textwrap.fill(
             text=text,
             width=self._line_width,
-            initial_indent=' ' * initial_indent,
-            subsequent_indent=' ' * subsequent_indent,
+            initial_indent=" " * initial_indent,
+            subsequent_indent=" " * subsequent_indent,
             expand_tabs=False,
             break_long_words=False,
-            break_on_hyphens=False
+            break_on_hyphens=False,
         )
 
     def _add(self, content: t_content) -> None:
@@ -80,7 +72,7 @@ class RstCloth:
         """
 
         if isinstance(content, list):
-            self._stream.write('\n'.join(content) + '\n')
+            self._stream.write("\n".join(content) + "\n")
         else:
             self._stream.write(content + "\n")
 
@@ -106,8 +98,7 @@ class RstCloth:
             # subtract one because every item gets one \n for free.
             self._add("\n" * (count - 1))
 
-    def table(self, header: typing.List,
-              data: t_optional_2d_array, indent=0) -> None:
+    def table(self, header: typing.List, data: t_optional_2d_array, indent=0) -> None:
         """
         Constructs grid table.
 
@@ -117,17 +108,17 @@ class RstCloth:
         :param indent: indentation depth
         """
 
-        t = tabulate(
-            tabular_data=data,
-            headers=header,
-            tablefmt="grid",
-            disable_numparse=True
-        )
+        t = tabulate(tabular_data=data, headers=header, tablefmt="grid", disable_numparse=True)
         self._add("\n" + _indent(t, indent) + "\n")
 
-    def table_list(self, headers: typing.Iterable, data: t_optional_2d_array,
-                   widths: t_widths = None, width: t_width = None,
-                   indent: int = 0) -> None:
+    def table_list(
+        self,
+        headers: typing.Iterable,
+        data: t_optional_2d_array,
+        widths: t_widths = None,
+        width: t_width = None,
+        indent: int = 0,
+    ) -> None:
         """
         Constructs list table.
 
@@ -147,7 +138,7 @@ class RstCloth:
             rows.extend([headers])
         if widths is not None:
             if not isinstance(widths, str):
-                widths = ' '.join(map(str, widths))
+                widths = " ".join(map(str, widths))
             fields.append(("widths", widths))
         if width is not None:
             fields.append(("width", str(width)))
@@ -163,8 +154,9 @@ class RstCloth:
                 self.li(cell, bullet="  -", indent=indent + 3)
         self.newline()
 
-    def directive(self, name: str, arg: str = None, fields: t_fields = None,
-                  content: t_content = None, indent: int = 0) -> None:
+    def directive(
+        self, name: str, arg: str = None, fields: t_fields = None, content: t_content = None, indent: int = 0
+    ) -> None:
         """
         Constructs reStructuredText directive.
 
@@ -175,9 +167,7 @@ class RstCloth:
         :param indent: indentation depth
         """
         if arg is None:
-            marker = ".. {type}::".format(
-                type=name
-            )
+            marker = ".. {type}::".format(type=name)
             self._add(_indent(marker, indent))
         else:
             first_whitespace = first_whitespace_position(arg)
@@ -186,21 +176,12 @@ class RstCloth:
             # the directive in half then it is better to exceed the line width
             # limitation.
             if len(name) + first_whitespace + indent + 6 > self._line_width:
-                marker = ".. {type}::".format(
-                    type=name
-                )
+                marker = ".. {type}::".format(type=name)
                 self._add(_indent(marker, indent))
                 self.content(arg, indent=indent + 3)
             else:
-                marker = ".. {type}:: {argument}".format(
-                    type=name,
-                    argument=arg
-                )
-                result = self.fill(
-                    marker,
-                    initial_indent=indent,
-                    subsequent_indent=indent + 3
-                )
+                marker = ".. {type}:: {argument}".format(type=name, argument=arg)
+                result = self.fill(marker, initial_indent=indent, subsequent_indent=indent + 3)
                 self._add(result)
 
         if fields is not None:
@@ -298,8 +279,7 @@ class RstCloth:
         output = ".. |{0}| replace:: {1}".format(name, value)
         self._add(_indent(output, indent))
 
-    def codeblock(self, content: t_content, indent: int = 0,
-                  language: str = None) -> None:
+    def codeblock(self, content: t_content, indent: int = 0, language: str = None) -> None:
         """
         Constructs literal block.
 
@@ -310,15 +290,9 @@ class RstCloth:
         :return: literal block
         """
         if language is None:
-            self._add(
-                self.fill('::', initial_indent=indent)
-            )
+            self._add(self.fill("::", initial_indent=indent))
         else:
-            self.directive(
-                name="code-block",
-                arg=language,
-                indent=indent
-            )
+            self.directive(name="code-block", arg=language, indent=indent)
             self.newline()
         self._add(_indent(content, indent + 3))
 
@@ -330,16 +304,9 @@ class RstCloth:
         :param text: the text to write into this element
         :param indent: indentation depth
         """
-        self._add(
-            self.fill(
-                ".. [#{0}] {1}".format(ref, text),
-                indent,
-                indent + 3
-            )
-        )
+        self._add(self.fill(".. [#{0}] {1}".format(ref, text), indent, indent + 3))
 
-    def definition(self, name: str, text: str,
-                   indent: int = 0, bold: bool = False) -> None:
+    def definition(self, name: str, text: str, indent: int = 0, bold: bool = False) -> None:
         """
         Constructs definition list item.
 
@@ -354,14 +321,13 @@ class RstCloth:
         self._add(self.fill(name, indent, indent))
         self._add(self.fill(text, indent + 3, indent + 3))
 
-    def li(self, content: t_content,
-           bullet: str = "-", indent: int = 0) -> None:
+    def li(self, content: t_content, bullet: str = "-", indent: int = 0) -> None:
         """
         Constructs bullet list item.
 
         :param content: the text to write into this element
         :param bullet: the character of the bullet
-        :param indent: indentation depth
+        :param indent: (optional default=0) number of characters to indent this element
         """
 
         bullet += " "
@@ -369,13 +335,7 @@ class RstCloth:
 
         if isinstance(content, list):
             content = bullet + "\n".join(content)
-            self._add(
-                self.fill(
-                    content,
-                    indent,
-                    indent + hanging_indent_len
-                )
-            )
+            self._add(self.fill(content, indent, indent + hanging_indent_len))
         else:
             self._add(self.fill(bullet + content, indent, hanging_indent_len))
 
@@ -389,19 +349,12 @@ class RstCloth:
         """
         first_whitespace = first_whitespace_position(value)
         if len(name) + first_whitespace + indent + 3 > self._line_width:
-            marker = ':{name}:'.format(name=name)
+            marker = ":{name}:".format(name=name)
             self._add(_indent(marker, indent))
             self.content(value, indent=indent + 3)
         else:
-            marker = ":{name}: {value}".format(
-                name=name,
-                value=value
-            )
-            result = self.fill(
-                marker,
-                initial_indent=indent,
-                subsequent_indent=indent + 3
-            )
+            marker = ":{name}: {value}".format(name=name, value=value)
+            result = self.fill(marker, initial_indent=indent, subsequent_indent=indent + 3)
             self._add(result)
 
     def ref_target(self, name: str, indent: int = 0) -> None:
@@ -422,11 +375,10 @@ class RstCloth:
         :param indent: indentation depth
         """
         if isinstance(content, list):
-            content = ' '.join(content)
+            content = " ".join(content)
         self._add(self.fill(content, indent, indent))
 
-    def heading(self, text: str, char: str, overline: bool = False,
-                indent: int = 0) -> None:
+    def heading(self, text: str, char: str, overline: bool = False, indent: int = 0) -> None:
         """
         Constructs section title.
 
@@ -442,39 +394,39 @@ class RstCloth:
             content.insert(0, underline)
         self._add(_indent(content, indent))
 
-    h1 = functools.partialmethod(heading, char='=')
-    h2 = functools.partialmethod(heading, char='-')
-    h3 = functools.partialmethod(heading, char='~')
-    h4 = functools.partialmethod(heading, char='+')
-    h5 = functools.partialmethod(heading, char='^')
-    h6 = functools.partialmethod(heading, char=';')
-    title = functools.partialmethod(heading, char='=', overline=True)
+    h1 = functools.partialmethod(heading, char="=")
+    h2 = functools.partialmethod(heading, char="-")
+    h3 = functools.partialmethod(heading, char="~")
+    h4 = functools.partialmethod(heading, char="+")
+    h5 = functools.partialmethod(heading, char="^")
+    h6 = functools.partialmethod(heading, char=";")
+    title = functools.partialmethod(heading, char="=", overline=True)
 
     # admonitions
-    admonition = functools.partialmethod(directive, name='admonition')
-    attention = functools.partialmethod(directive, name='attention')
-    caution = functools.partialmethod(directive, name='caution')
-    danger = functools.partialmethod(directive, name='danger')
-    error = functools.partialmethod(directive, name='error')
-    hint = functools.partialmethod(directive, name='hint')
-    important = functools.partialmethod(directive, name='important')
-    note = functools.partialmethod(directive, name='note')
-    tip = functools.partialmethod(directive, name='tip')
-    warning = functools.partialmethod(directive, name='warning')
+    admonition = functools.partialmethod(directive, name="admonition")
+    attention = functools.partialmethod(directive, name="attention")
+    caution = functools.partialmethod(directive, name="caution")
+    danger = functools.partialmethod(directive, name="danger")
+    error = functools.partialmethod(directive, name="error")
+    hint = functools.partialmethod(directive, name="hint")
+    important = functools.partialmethod(directive, name="important")
+    note = functools.partialmethod(directive, name="note")
+    tip = functools.partialmethod(directive, name="tip")
+    warning = functools.partialmethod(directive, name="warning")
 
     # bibliographic fields
-    abstract = functools.partialmethod(field, name='Abstract')
-    address = functools.partialmethod(field, name='Address')
-    author = functools.partialmethod(field, name='Author')
-    authors = functools.partialmethod(field, name='Authors')
-    contact = functools.partialmethod(field, name='Contact')
-    copyright = functools.partialmethod(field, name='Copyright')
-    date = functools.partialmethod(field, name='Date')
-    dedication = functools.partialmethod(field, name='Dedication')
-    organization = functools.partialmethod(field, name='Organization')
-    revision = functools.partialmethod(field, name='Revision')
-    status = functools.partialmethod(field, name='Status')
-    version = functools.partialmethod(field, name='Version')
+    abstract = functools.partialmethod(field, name="Abstract")
+    address = functools.partialmethod(field, name="Address")
+    author = functools.partialmethod(field, name="Author")
+    authors = functools.partialmethod(field, name="Authors")
+    contact = functools.partialmethod(field, name="Contact")
+    copyright = functools.partialmethod(field, name="Copyright")
+    date = functools.partialmethod(field, name="Date")
+    dedication = functools.partialmethod(field, name="Dedication")
+    organization = functools.partialmethod(field, name="Organization")
+    revision = functools.partialmethod(field, name="Revision")
+    status = functools.partialmethod(field, name="Status")
+    version = functools.partialmethod(field, name="Version")
 
     # raw directives
     def page_break(self, template: str = None) -> None:
@@ -484,10 +436,10 @@ class RstCloth:
         :param template: name of the next page template
         """
         if template is None:
-            content = 'PageBreak'
+            content = "PageBreak"
         else:
-            content = 'PageBreak {template}'.format(template=template)
-        self.directive(name='raw', arg='pdf', content=content)
+            content = "PageBreak {template}".format(template=template)
+        self.directive(name="raw", arg="pdf", content=content)
 
     def frame_break(self, heights: int) -> None:
         """
@@ -495,11 +447,7 @@ class RstCloth:
 
         :param heights: height in points
         """
-        self.directive(
-            name='raw',
-            arg='pdf',
-            content='FrameBreak {0}'.format(heights)
-        )
+        self.directive(name="raw", arg="pdf", content="FrameBreak {0}".format(heights))
 
     def spacer(self, horizontal: int, vertical: int) -> None:
         """
@@ -509,16 +457,12 @@ class RstCloth:
         :param vertical: vertical size in points
         """
         self.directive(
-            name='raw',
-            arg='pdf',
-            content='Spacer {horizontal} {vertical}'.format(
-                horizontal=horizontal,
-                vertical=vertical
-            )
+            name="raw",
+            arg="pdf",
+            content="Spacer {horizontal} {vertical}".format(horizontal=horizontal, vertical=vertical),
         )
 
-    def table_of_contents(self, name: str = None, depth: int = None,
-                          backlinks: str = None) -> None:
+    def table_of_contents(self, name: str = None, depth: int = None, backlinks: str = None) -> None:
         """
         Constructs table of contents.
 
@@ -531,17 +475,13 @@ class RstCloth:
         """
         options = []
         if depth:
-            options.append(('depth', str(depth)))
-        if backlinks in ['entry', 'top', 'none']:
-            options.append(('backlinks', backlinks))
-        self.directive(
-            name='contents',
-            arg=name,
-            fields=options
-        )
+            options.append(("depth", str(depth)))
+        if backlinks in ["entry", "top", "none"]:
+            options.append(("backlinks", backlinks))
+        self.directive(name="contents", arg=name, fields=options)
 
     def transition_marker(self) -> None:
         """
         Constructs transition marker.
         """
-        self._add('\n---------\n')
+        self._add("\n---------\n")
