@@ -1,6 +1,7 @@
 RstCloth
 ========
 
-.. autoclass:: rstcloth.rstcloth_builder.RstCloth
+.. autoclass:: rstcloth.rstcloth.RstCloth
     :members:
     :inherited-members:
+    :undoc-members:
