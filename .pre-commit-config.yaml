@@ -75,7 +75,9 @@ repos:
     rev: 0.0.1
     hooks:
       - id: build-docs
-        types: [file]
         language_version: python3
         additional_dependencies:
           - ".[docs]"
+          # .[docs] should install these... I don't know why it doesn't
+          - "sphinx-math-dollar==1.2.0"
+          - "sphinx-charts"
