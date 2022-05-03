@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rstcloth"
-version = "0.3.2"
+version = "0.4.0"
 description = "A simple Python API for generating RestructuredText."
 authors = ["Tom Clark"]
 license = "MIT"

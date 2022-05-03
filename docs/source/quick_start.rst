@@ -22,7 +22,7 @@ The following RstCloth code: ::
    d.h2('Code -- shebang')
    d.codeblock('#!/usr/bin/env')
 
-   d.print_content()
+   print(str(d))
 
 Would result in the following reStructuredText: ::
 
@@ -61,5 +61,22 @@ Example 2
         ]
     )
 
-    doc.print_content()
+    print(str(doc))
+
+Would result in the following reStructuredText: ::
+
+    ================
+    Example Document
+    ================
+
+
+    +-----------+-----------+-----------+
+    |Column 1   |Column 2   |Column 3   |
+    +===========+===========+===========+
+    |1          |2          |3          |
+    +-----------+-----------+-----------+
+    |4          |5          |6          |
+    +-----------+-----------+-----------+
+    |7          |8          |9          |
+    +-----------+-----------+-----------+
 
