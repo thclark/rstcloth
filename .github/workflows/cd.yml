@@ -1,4 +1,5 @@
-# Only trigger when a pull request into main branch is merged
+name: cd
+
 on:
   pull_request:
     types: [closed]
