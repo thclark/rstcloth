@@ -14,4 +14,3 @@ Installation
 .. code-block:: python
 
    pip install rstcloth
-
