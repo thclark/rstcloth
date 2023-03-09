@@ -2,10 +2,10 @@ import functools
 import sys
 import textwrap
 import typing
-
 from tabulate import tabulate
 
 from rstcloth.utils import first_whitespace_position
+
 
 t_content = typing.Union[str, typing.List[str]]
 t_fields = typing.Iterable[typing.Tuple[str, str]]
