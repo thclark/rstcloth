@@ -402,6 +402,20 @@ class RstCloth:
     h6 = functools.partialmethod(heading, char=";")
     title = functools.partialmethod(heading, char="=", overline=True)
 
+    def h(self, text: str, level: int = 1) -> None:
+        if level == 1:
+            self.h1(text)
+        elif level == 2:
+            self.h2(text)
+        elif level == 3:
+            self.h3(text)
+        elif level == 4:
+            self.h4(text)
+        elif level == 5:
+            self.h5(text)
+        elif level == 6:
+            self.h6(text)
+
     # admonitions
     admonition = functools.partialmethod(directive, name="admonition")
     attention = functools.partialmethod(directive, name="attention")

@@ -253,6 +253,30 @@ class TestRstCloth(unittest.TestCase):
         self.r.h6("test")
         self.assertEqual(self.r.data, "test\n" ";;;;\n")
 
+    def test_h_level1(self, level=1):
+        self.r.h("test", level)
+        self.assertEqual(self.r.data, "test\n" "====\n")
+
+    def test_h_level2(self, level=2):
+        self.r.h("test", level)
+        self.assertEqual(self.r.data, "test\n" "----\n")
+
+    def test_h_level3(self, level=3):
+        self.r.h("test", level)
+        self.assertEqual(self.r.data, "test\n" "~~~~\n")
+
+    def test_h_level4(self, level=4):
+        self.r.h("test", level)
+        self.assertEqual(self.r.data, "test\n" "++++\n")
+
+    def test_h_level5(self, level=5):
+        self.r.h("test", level)
+        self.assertEqual(self.r.data, "test\n" "^^^^\n")
+
+    def test_h_level6(self, level=6):
+        self.r.h("test", level)
+        self.assertEqual(self.r.data, "test\n" ";;;;\n")
+
     def test_replacement(self):
         self.r.replacement("foo", "replace-with-bar")
         self.assertEqual(self.r.data, ".. |foo| replace:: replace-with-bar\n")
