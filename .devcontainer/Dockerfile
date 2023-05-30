@@ -1,6 +1,6 @@
 # A useful base repository based on ms devcontainer but with a bunch of fixes
 # and useful installs (geo tools are unnecessary for this project, but all the other tweaks are helpful)
-FROM windpioneers/gdal-python:familiar-catshark-gdal-2.4.1-python-3.9-dev
+FROM windpioneers/gdal-python:little-gecko-gdal-2.4.1-python-3.9-dev
 
 # Tell zsh where you want to store history
 #     We leave you to decide, but if you put this into a folder that's been mapped
@@ -19,8 +19,11 @@ USER vscode
 WORKDIR /workspaces/rstcloth
 
 # Install poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-ENV PATH "/home/vscode/.poetry/bin:$PATH"
+#  TODO remove once https://github.com/windpioneers/gdal-python/issues/11 is released
+USER vscode
+ENV POETRY_HOME=/home/vscode/.poetry
+RUN curl -sSL https://install.python-poetry.org | python -
+ENV PATH "$POETRY_HOME/bin:$PATH"
 RUN poetry config virtualenvs.create false
 
 # Install python dependencies. Note that poetry installs any root packages by default,
