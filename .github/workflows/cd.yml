@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Test package is publishable with PyPI test server
-        uses: JRubics/poetry-publish@v1.9
+        uses: JRubics/poetry-publish@v1.16
         with:
           python_version: "3.9"
           pypi_token: ${{ secrets.TEST_PYPI_TOKEN }}
@@ -25,10 +25,10 @@ jobs:
           repository_url: "https://test.pypi.org/legacy/"
 
       - name: Publish latest package to PyPI
-        uses: JRubics/poetry-publish@v1.9
+        uses: JRubics/poetry-publish@v1.16
         with:
           python_version: "3.9"
-          poetry_version: "==1.1.12" # (PIP version specifier syntax)
+          poetry_version: "==1.4.2" # (PIP version specifier syntax)
           pypi_token: ${{ secrets.PYPI_TOKEN }}
           ignore_dev_requirements: "yes"
 
