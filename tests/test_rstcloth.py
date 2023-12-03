@@ -1,5 +1,6 @@
 import io
 import unittest
+import pytest
 
 from rstcloth import RstCloth
 
@@ -647,6 +648,78 @@ class TestTable(unittest.TestCase):
 
         r.table_list(headers, data, width="80%")
         self.assertEqual(r.data, expected)
+
+
+class SimpleTestTable(unittest.TestCase):
+    """Testing operation of the Rst generator for simple tables"""
+
+    def test_header_1_body_0(self):
+        r = RstCloth(stream=io.StringIO())
+        r.simple_table(header=["span"], data=None)
+        expected = "\n======\nspan\n======\n======\n\n"
+        given = r.data
+        self.assertEqual(expected, given)
+
+    def test_header_1_body_1(self):
+        r = RstCloth(stream=io.StringIO())
+        r.simple_table(header=["span"], data=[[1]])
+        expected = "\n======\nspan\n======\n1\n======\n\n"
+        given = r.data
+        self.assertEqual(expected, given)
+
+    def test_header_2_body_0(self):
+        r = RstCloth(stream=io.StringIO())
+        r.simple_table(header=["span", "ham"], data=None)
+        expected = "\n======  =====\nspan    ham\n======  =====\n======  =====\n\n"
+        given = r.data
+        self.assertEqual(expected, given)
+
+    def test_header_2_body_1(self):
+        r = RstCloth(stream=io.StringIO())
+        r.simple_table(header=["span", "ham"], data=[[1, 2]])
+        expected = "\n======  =====\nspan    ham\n======  =====\n1       2\n======  =====\n\n"
+        given = r.data
+        self.assertEqual(expected, given)
+
+    def test_header_2_body_2(self):
+        r = RstCloth(stream=io.StringIO())
+        r.simple_table(header=["span", "ham"], data=[[1, 2], [3, 4]])
+        expected = "\n======  =====\nspan    ham\n======  =====\n1       2\n3       4\n======  =====\n\n"
+        given = r.data
+        self.assertEqual(expected, given)
+
+    def test_header_2_body_2_indent(self):
+        r = RstCloth(stream=io.StringIO())
+        r.simple_table(header=["span", "ham"], data=[[1, 2], [3, 4]], indent=3)
+        expected = (
+            "\n   ======  =====\n   span    ham\n   ======  =====\n   1       2\n   3       4\n   ======  =====\n\n"
+        )
+        given = r.data
+        self.assertEqual(expected, given)
+
+
+@pytest.mark.parametrize(
+    "header,data,expected",
+    [
+        (["span"], None, "\n======\nspan\n======\n======\n\n"),
+        (["span"], [[1]], "\n======\nspan\n======\n1\n======\n\n"),
+        (["span", "ham"], None, "\n======  =====\nspan    ham\n======  =====\n======  =====\n\n"),
+        (["span", "ham"], [[1, 2]], "\n======  =====\nspan    ham\n======  =====\n1       2\n======  =====\n\n"),
+        (
+            ["span", "ham"],
+            [[1, 2], [3, 4]],
+            "\n======  =====\nspan    ham\n======  =====\n1       2\n3       4\n======  =====\n\n",
+        ),
+    ],
+)
+class TestParamterizedSimpleTestTable:
+    """Testing operation of the Rst generator for simple tables"""
+
+    def test_header_1_body_0(self, header, data, expected):
+        r = RstCloth(stream=io.StringIO())
+        r.simple_table(header=header, data=data)
+        given = r.data
+        assert given == expected
 
 
 if __name__ == "__main__":

@@ -111,6 +111,19 @@ class RstCloth:
         t = tabulate(tabular_data=data, headers=header, tablefmt="grid", disable_numparse=True)
         self._add("\n" + _indent(t, indent) + "\n")
 
+    def simple_table(self, header: typing.List, data: t_optional_2d_array, indent=0) -> None:
+        """
+        Constructs a simple grid table.
+
+        :param header: a list of header values (strings), to use for the table
+        :param data: a list of lists of row data (same length as the header
+            list each)
+        :param indent: number of spaces to indent this element
+        """
+
+        t = tabulate(tabular_data=data, headers=header, tablefmt="rst", disable_numparse=True)
+        self._add("\n" + _indent(t, indent) + "\n")
+
     def table_list(
         self,
         headers: typing.Iterable,
