@@ -35,8 +35,6 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.viewcode",
     "sphinx_tabs.tabs",
-    "sphinx_math_dollar",
-    "sphinx.ext.mathjax",
     "sphinx.ext.ifconfig",
     "sphinx_charts.charts",
 ]
@@ -49,22 +47,13 @@ source_suffix = ".rst"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
-mathjax_path = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_SVG"
-mathjax_config = {
-    "tex2jax": {
-        "inlineMath": [["$", "$"], ["\\(", "\\)"]],
-        "processEscapes": True,
-        "ignoreClass": "document",
-        "processClass": "math|output_area",
-    }
-}
 
 # The master toctree document.
 master_doc = "index"
 
 # General information about the project.
 project = "Rstcloth"
-copyright = "2020-22 Thomas Clark"
+copyright = "2020-24 Thomas Clark"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
